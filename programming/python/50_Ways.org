@@ -22,7 +22,9 @@
 ** DONE 2. Follow the PEP (Python Enhancement Proposal) 8 Style Guide
    CLOSED: [2019-05-28 Tue 10:35]
 
-   > Don't do this manually, use a tool like =autopep8= and =pylint=.
+   #+begin_quote
+   Don't do this manually, use a tool like =autopep8= and =pylint=.
+   #+end_quote
 
 *** Naming
     

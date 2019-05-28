@@ -59,7 +59,7 @@
 
     http://book.realworldhaskell.org/read/
  
-
+    
 ** Scheme / Chicken
 
    
@@ -91,10 +91,10 @@
     
 ** Python
 
-*** TODO [[file:programming/python/50_Ways.org][Effective Python]]
-   
-** Reference Materials
+*** Reference Materials
 
+**** TODO [[file:programming/python/50_Ways.org][Effective Python]]
+    
 * Cloud Architecture
 
 ** AWS
