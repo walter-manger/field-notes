@@ -12,16 +12,93 @@
 
     - [[https://www.quora.com/What-are-the-best-resources-for-learning-Haskell][Quora - Best Resources For Learning Haskell]]
 
+**** Notable
+
+     - https://wiki.haskell.org/Research_papers/Functional_pearls
+
 *** TODO Haskell Environment Setup
-     
+    
     I am using the following links for inspiration.
      
     - [[https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/][An Opinionated Guide To Haskell In 2018]]
-    - [[https://touk.pl/blog/2015/10/14/getting-started-with-haskell-stack-and-spacemacs/][Getting Started with Haskell, Stack, and Spacemacs]] (remember, don't =stack install=)
+    - [[https://touk.pl/blog/2015/10/14/getting-started-with-haskell-stack-and-spacemacs/][Getting Started with Haskell, Stack, and Spacemacs]] (remember, don't =stack install= unless you want something in `~/.local/bin`)
        
+**** Start A New Project
+
+     #+BEGIN_SRC bash
+       stack build --copy-compiler-tool ghc-mod hoogle weeder stylish-haskell
+     #+END_SRC
+
+*** TODO Learn You A Haskell
+    
+    http://learnyouahaskell.com/chapters   
+
+    - [X] Chapter 1
+    - [X] Chapter 2
+    - [X] Chapter 3
+    - [ ] Chapter 5
+    - [ ] Chapter 6
+    - [ ] Chapter 7
+    - [ ] Chapter 8
+    - [ ] Chapter 9
+    - [ ] Chapter 10
+    - [ ] Chapter 11
+    - [ ] Chapter 12
+    - [ ] Chapter 13
+    - [ ] Chapter 14
 
 *** TODO Write Yourself A Scheme in 48 Hours
 
     This seems like the best place to start at the moment.
-
+    
     [[https://upload.wikimedia.org/wikipedia/commons/a/aa/Write_Yourself_a_Scheme_in_48_Hours.pdf][Write Yourself A Scheme in 48 Hours]]
+
+*** TODO Real World Haskell
+
+    Another pretty good resource for learning real-world programming with Haskell.
+
+    http://book.realworldhaskell.org/read/
+ 
+
+** Scheme / Chicken
+
+   
+*** TODO Reference Materials
+    
+    - Environment: https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/scheme
+    - SICP Exercises: https://github.com/zv/SICP-guile
+    - SICP Book: https://github.com/zv/SICP-guile
+
+*** DONE Environment Setup
+  
+    We're using Chicken and Guile, so install them from brew.
+    
+    #+begin_src bash
+      brew update && brew install chicken && brew install guile
+    #+end_src
+
+    Since I am using Spacemacs, there is a layer for interacting for Scheme (Chicken/Guile). 
+   
+    Add the scheme layer to emacs
+ 
+    #+begin_src elisp
+      (defun dotspacemacs/layers ()
+        (setq-default
+         dotspacemacs-configuration-layers
+         '(scheme)))
+    #+end_src
+
+    
+** Python
+
+*** TODO [[file:programming/python/50_Ways.org][Effective Python]]
+   
+** Reference Materials
+
+* Cloud Architecture
+
+** AWS
+
+*** SQS
+
+    1. Make sure you know how to fail properly

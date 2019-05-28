@@ -1,0 +1,101 @@
+#+TITLE: 50 Ways To Improve Python
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS(!) | DONE(!)
+
+
+* Pythonic Thinking
+
+** DONE 1. Know Which Version of Python You're Using
+   CLOSED: [2019-05-28 Tue 10:35]
+
+   #+begin_src sh
+     python --version
+     python3 --version
+     which python
+   #+end_src
+
+   #+RESULTS:
+   | Python                            | 3.6.2 |
+   | Python                            | 3.6.2 |
+   | /Users/------/.pyenv/shims/python |       |
+
+** DONE 2. Follow the PEP (Python Enhancement Proposal) 8 Style Guide
+   CLOSED: [2019-05-28 Tue 10:35]
+
+   > Don't do this manually, use a tool like =autopep8= and =pylint=.
+
+*** Naming
+    
+    - Functions, variables, and attributes should be in =lowercase_underscore= format.
+    - Protected instance attributes should be in =_leading_underscore= format.
+    - Private instance attributes should be in =__double_leading_underscore= format.
+    - Classes and exceptions should be in =CapitalizedWord= format.
+    - Module-level constants should be in =ALL_CAPS= format.
+    - Instance methods in classes should use =self= as the name of the first parameter (which refers to the object).
+    - Class methods should use =cls= as the name of the first parameter (which refers to the class). 
+
+*** Expressions and Statements
+    
+    - Use inline negation =(if a is not b)= instead of negation of positive expressions =(if not a is b)=
+    - Don't check for empty values (like =[]= or =''=) by checking the length =(if len(somelist) == 0=. Use =if not somelist= and assume empty values implicitly evaluate to =False=.
+    - The same thing goes for non-empty values (like =[1]= or ='hi'=). The statement =if somelist= is implicitly =True= for non-empty values.
+    - Avoid single-line =if= statements, =for= and =while= loops, and =except= compound statements. Spread these over multiple lines for clarity.
+    - Always put =import= statements at the top of a file.
+    - Always use absolute names for modules when importing them, not names relative to the current module's own path. For example, to import the =foo= module from the =bar= package, you should do =from bar import foo=, not just =import foo=.
+    - Imports should be in sections in the following order: standard library modules, third=party modules, your own modules. Each subsection should have imports in alphabetical order.
+
+** TODO 3. Know the Differences Between =bytes=, =str=, and =unicode=
+
+   No need to worry about =unicode= in Python 3. 
+
+   #+begin_src python
+     def to_str(bytes_or_str) -> str:
+         if isinstance(bytes_or_str, bytes):
+             value = bytes_or_str.decode('utf-8')
+         else:
+             value = bytes_or_str
+         return value # Instance of str
+   #+end_src
+  
+   #+begin_src python 
+     def to_bytes(bytes_or_str) -> bytes:
+         if isinstance(bytes_or_str, str):
+             value = bytes_or_str.encode('utf-8')
+         else:
+             value = bytes_or_str
+         return value # Instance of bytes
+   #+end_src
+
+** TODO 4. Write Helper Functions Instead of Complex Expressions
+
+** TODO 5. Know how to Slice Sequences
+
+** TODO 6. Avoid Using =start=, =end=, and =stride= in a Single Slice
+
+** TODO 7. Use List Comprehensions Instead of =map= and =filter=
+
+** TODO 8. Avoid More Than Two Expressions in List Comprehensions
+
+** TODO 9. Consider Generator Expressions for Large Comprehensions
+
+** TODO 10. Prefer =enumerate= over =range=
+
+** TODO 11. Use =zip= to Process Iterators in Parallel
+
+** TODO 12. Avoid =else= Blocks After =for= and =while= Loops
+
+** TODO 13. Take Advantage of Each Block in =try/except/else/finally=
+
+* Functions
+
+* Classes and Inheritance
+
+* Metaclasses and Attributes
+
+* Concurrency and Parallelism
+
+* Built-in Modules
+
+* Collaboration
+
+* Production
