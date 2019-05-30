@@ -1,7 +1,6 @@
-#+TITLE: 50 Ways To Improve Python
+#+TITLE: 59 Ways To Improve Python
 #+STARTUP: logdone
 #+TODO: TODO IN-PROGRESS(!) | DONE(!)
-
 
 * Pythonic Thinking
 
@@ -46,8 +45,11 @@
     - Always use absolute names for modules when importing them, not names relative to the current module's own path. For example, to import the =foo= module from the =bar= package, you should do =from bar import foo=, not just =import foo=.
     - Imports should be in sections in the following order: standard library modules, third=party modules, your own modules. Each subsection should have imports in alphabetical order.
 
-** TODO 3. Know the Differences Between =bytes=, =str=, and =unicode=
+** DONE 3. Know the Differences Between =bytes=, =str=, and =unicode=
+   CLOSED: [2019-05-29 Wed 21:57]
 
+   - State "DONE"       from "IN-PROGRESS" [2019-05-29 Wed 21:57]
+   - State "IN-PROGRESS" from "TODO"       [2019-05-29 Wed 21:57]
    No need to worry about =unicode= in Python 3. 
 
    #+begin_src python
@@ -67,10 +69,102 @@
              value = bytes_or_str
          return value # Instance of bytes
    #+end_src
+   
+   - In Python 3, =bytes= contains a sequence of 8-bit values, =str= contains sequences of Unicode chars. =bytes= and =str= instances can't be used together with operators (like =>= or =+=).
+   - In Python 2, =str= contains sequences of 8-bit values, =unicode= contains sequences of Unicode chars. =str= and =unicode= /can/ be used together with operators if the =str= only contains 7-bit ASCII chars.
+   - Use helper functions to ensure that the inputs you operate on are the type of char sequence you expect.
+   - *If you want to read or write binary data to/from a file, always open the file using a binary mode (like ='rb'= or ='wb'=).
 
-** TODO 4. Write Helper Functions Instead of Complex Expressions
+** DONE 4. Write Helper Functions Instead of Complex Expressions
+   CLOSED: [2019-05-29 Wed 22:07]
 
-** TODO 5. Know how to Slice Sequences
+   - State "DONE"       from "IN-PROGRESS" [2019-05-29 Wed 22:07]
+   - State "IN-PROGRESS" from "TODO"       [2019-05-29 Wed 22:07]
+   Amen.
+
+   #+begin_src python
+     red = int(some_dict.get('red'), [''])[0] or 0) # bad
+
+     # --------------------------
+
+     red = some_dict.get('red', [''])
+     red = int(red[0]) if red[0] else 0  # better, but still bad
+
+     # --------------------------
+
+     red = some_dict.get('red', [''])  # better, but verbose
+     if red[0]:
+         red = int(red[0])
+     else:
+         red = 0
+
+     # --------------------------
+
+     def get_first_int(some_dict, key, default=0):
+         found = values.get(key, [''])
+         if found[0]:
+             found = int(found[0])
+         else:
+             found = default
+         return found
+
+     red = get_first_int(some_dict, 'red', 0)  # best.
+   #+end_src
+
+** DONE 5. Know how to Slice Sequences
+   CLOSED: [2019-05-29 Wed 22:44]
+
+   - State "DONE"       from "IN-PROGRESS" [2019-05-29 Wed 22:44]
+   - State "IN-PROGRESS" from "TODO"       [2019-05-29 Wed 22:44]
+   #+begin_src python
+     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+     print('First Four: ', a[:4])
+     print('Last Four: ', a[-4:])
+     print('Middle Two: ', a[3:-3])
+
+     # Leave out the zero index, because it's visual noise
+     assert a[:5] == a[0:5]
+
+     # Leave out the final index, because it's redundant
+     assert a[5:] == a[5:len(a)]
+
+     # Prefer clarity
+     # a[start(inclusive):end(exclusive)]
+     a[:]         # ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+     a[:5]        # ['a', 'b', 'c', 'd', 'e']
+     a[:-1]       # ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+     a[4:]        #                     ['e', 'f', 'g', 'h']
+     a[-3:]       #                          ['f', 'g', 'h']
+     a[2:5]       #           ['c', 'd', 'e']
+     a[2:-1]      #           ['c', 'd', 'e', 'f', 'g']
+     a[-3:-1]     #                          ['f', 'g']
+   #+end_src
+
+   Negative numbers =n= for the slice implies =len(a)-n=. Therefore
+
+   #+begin_src python
+     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+     assert a[-3:-1] == a[len(a)-3:len(a)-1] # == a[5:7]
+   #+end_src
+
+   Create new lists from slices. Splice lists into lists.
+
+   #+begin_src python
+     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+     b = [4:]             # ['e', 'f', 'g', 'h']  NEW list
+     b[1] = 99            # ['e', 99, 'g', 'h']
+     print(a)             # ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+
+     # Inject lists into lists
+
+     a[2:7] = [1, 2, 3]   # ['a', 'b', 1, 2, 3, 'h']
+   #+end_src
+
+   - Don't be verbose -> =a[:5]= over =a[0:5]=
+   - Slices won't give an IndexError if you slice out of range
+   - Slices return a new list
+   - Assigning to a =list= slice will replace that range in the original sequence with what's referenced even if their lengths differ.
 
 ** TODO 6. Avoid Using =start=, =end=, and =stride= in a Single Slice
 
