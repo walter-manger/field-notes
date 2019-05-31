@@ -57,9 +57,9 @@ length' [] = 0
 length' (_:xs) = 1 + length' xs
 
 
-sum' :: (Num a) => [a] -> a
-sum' [] = 0
-sum' (x:xs) = x + sum' xs
+someSum :: (Num a) => [a] -> a
+someSum [] = 0
+someSum (x:xs) = x + someSum xs
 
 
 -- bmiTell :: (RealFloat a) => a -> String
