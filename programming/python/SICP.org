@@ -2,3 +2,5 @@
 #+STARTUP: logdone
 #+TODO: TODO IN-PROGRESS(!) | DONE(!)
 
+http://www.composingprograms.com/
+Homework: https://cs61a.org/
