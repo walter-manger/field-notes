@@ -16,6 +16,9 @@
 
      - https://wiki.haskell.org/Research_papers/Functional_pearls
 
+       
+*** TODO 99 Haskell Problems
+
 *** TODO Haskell Environment Setup
     
     I am using the following links for inspiration.
@@ -33,6 +36,39 @@
     
     http://learnyouahaskell.com/chapters   
 
+
+    #+begin_src haskell :exports both
+      doubleMe x = x + x
+      doubleMe 2
+    #+end_src
+
+    #+RESULTS:
+    : 4
+
+    #+begin_src haskell :exports both
+      head' :: [a] -> a
+      head' [] = error "Can't call head on an empty list, dummy!"
+      head' (x:_) = x
+
+     head' [8,1,2,3]
+      
+    #+end_src
+
+    #+RESULTS:
+    : 8
+
+
+    #+begin_src haskell :exports both
+      someSum :: (Num a) => [a] -> a
+      someSum [] = 0
+      someSum (x:xs) = x + someSum xs
+      someSum [1,2]
+    #+end_src
+
+    #+RESULTS:
+    : *** Exception: <interactive>:45:1-31: Non-exhaustive patterns in function someSum
+
+
     - [X] Chapter 1
     - [X] Chapter 2
     - [X] Chapter 3
@@ -48,12 +84,6 @@
     - [ ] Chapter 13
     - [ ] Chapter 14
 
-*** TODO Write Yourself A Scheme in 48 Hours
-
-    This seems like the best place to start at the moment.
-    
-    [[https://upload.wikimedia.org/wikipedia/commons/a/aa/Write_Yourself_a_Scheme_in_48_Hours.pdf][Write Yourself A Scheme in 48 Hours]]
-
 *** TODO Real World Haskell
 
     Another pretty good resource for learning real-world programming with Haskell.
@@ -62,7 +92,6 @@
  
     
 ** Scheme / Chicken
-
    
 *** TODO Reference Materials
     
@@ -88,7 +117,6 @@
          dotspacemacs-configuration-layers
          '(scheme)))
     #+end_src
-
     
 ** Python
 
@@ -123,9 +151,12 @@
 *** Reference Materials
 
 **** TODO [[file:programming/python/50_Ways.org][Effective Python]]
-    
+   
 **** TODO Think Complexity
      
+**** TODO Music for Geeks and Nerds
+     https://pedrokroger.net/mfgan/
+ 
 **** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
 
 ** Javascript
@@ -198,3 +229,6 @@
 
     1. Make sure you know how to fail properly
        
+*** Reference Materials
+    
+**** TODO [[file:infrastructure/aws/aws_solutions_architect_associate.org][AWS Certified Solutions Architect Associate]]

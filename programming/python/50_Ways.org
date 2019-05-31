@@ -116,7 +116,7 @@
 
    - State "DONE"       from "IN-PROGRESS" [2019-05-29 Wed 22:44]
    - State "IN-PROGRESS" from "TODO"       [2019-05-29 Wed 22:44]
-   #+begin_src python
+   #+begin_src python :session example
      a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
      print('First Four: ', a[:4])
      print('Last Four: ', a[-4:])
@@ -139,6 +139,9 @@
      a[2:-1]      #           ['c', 'd', 'e', 'f', 'g']
      a[-3:-1]     #                          ['f', 'g']
    #+end_src
+
+   #+RESULTS:
+   | f | g |
 
    Negative numbers =n= for the slice implies =len(a)-n=. Therefore
 
@@ -166,9 +169,73 @@
    - Slices return a new list
    - Assigning to a =list= slice will replace that range in the original sequence with what's referenced even if their lengths differ.
 
-** TODO 6. Avoid Using =start=, =end=, and =stride= in a Single Slice
+** DONE 6. Avoid Using =start=, =end=, and =stride= in a Single Slice
+   CLOSED: [2019-05-30 Thu 22:40]
 
-** TODO 7. Use List Comprehensions Instead of =map= and =filter=
+   - State "DONE"       from "IN-PROGRESS" [2019-05-30 Thu 22:40]
+   - State "IN-PROGRESS" from "TODO"       [2019-05-30 Thu 22:40]
+   What is =stride= used for? Taking every /nth/ item when slicing a sequence.
+
+   =somelist[start:end:stride]=
+   
+   #+begin_src python :session example
+     a = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
+     evens = a[::2]              # ['a', 'c', 'e', 'g']
+     odds = a[1::2]              # ['b', 'd', 'f', 'h']
+     undesireable = a[1::-1]     # ['b', 'a'] 
+
+     undesireable
+   #+end_src
+
+   #+RESULTS:
+   | b | a |
+
+   - Specify =start=, =end=, and =stride= in a slice can be confusing.
+   - Prefer using /positive/ =stride= values in slices without =start= or =end= indexes.
+   - Avoid negative =stride= values.
+   - Avoid using =start=, =end=, and =stride= together in a single slice. If you need both operations, use two assignments.
+
+** DONE 7. Use List Comprehensions Instead of =map= and =filter=
+   CLOSED: [2019-05-30 Thu 22:54]
+
+   - State "DONE"       from "IN-PROGRESS" [2019-05-30 Thu 22:54]
+   - State "IN-PROGRESS" from "TODO"       [2019-05-30 Thu 22:54]
+   /List Comprehensions/ are expressions that derive one list from another.
+   
+   #+begin_src python :session example
+     a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+     squares = [x**2 for x in a]
+     squares
+   #+end_src
+
+   #+RESULTS:
+   | 1 | 4 | 9 | 16 | 25 | 36 | 49 | 64 | 81 | 100 |
+
+
+   Using the =map= built-in, we can achive the same result.
+
+   #+begin_src python :session example
+     a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+     squares = map(lambda x: x**2, a)
+     squares
+   #+end_src
+
+   #+RESULTS:
+   | 1 | 4 | 9 | 16 | 25 | 36 | 49 | 64 | 81 | 100 |
+
+   Filtering a /list comprehension/ is more concise than =map=/=filter=.
+
+   #+begin_src python :session example
+     a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+     lc_even_squares = [x**2 for x in a if x % 2 == 0] # Concise!
+     mf_even_squares = map(lambda x: x**2, filter(lambda x: x % 2 == 0, a)) # VERBOSE
+   #+end_src
+
+   #+RESULTS:
+
+   - List comprehensions are clearer than =map= and =filter= because no need for =lambda=.
+   - List comprehensions allow you to skip items from the list. =map= can't without =filter= and =lambda=s
+   - Dicts and =sets= also support comprehension expressions.
 
 ** TODO 8. Avoid More Than Two Expressions in List Comprehensions
 
