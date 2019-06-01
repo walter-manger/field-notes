@@ -1,5 +1,6 @@
 #+TITLE: 59 Ways To Improve Python
 #+STARTUP: logdone
+#+OPTIONS: toc:2 num:nil
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
 * Pythonic Thinking
