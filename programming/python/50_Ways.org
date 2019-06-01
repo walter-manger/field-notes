@@ -1,6 +1,6 @@
 #+TITLE: 59 Ways To Improve Python
 #+STARTUP: logdone
-#+TODO: TODO IN-PROGRESS(!) | DONE(!)
+#+TODO: TODO IN-PROGRESS | DONE(!)
 
 * Pythonic Thinking
 
@@ -190,6 +190,8 @@
    #+RESULTS:
    | b | a |
 
+   *Takeaways*
+   
    - Specify =start=, =end=, and =stride= in a slice can be confusing.
    - Prefer using /positive/ =stride= values in slices without =start= or =end= indexes.
    - Avoid negative =stride= values.
@@ -202,7 +204,7 @@
    - State "IN-PROGRESS" from "TODO"       [2019-05-30 Thu 22:54]
    /List Comprehensions/ are expressions that derive one list from another.
    
-   #+begin_src python :session example
+   #+begin_src python :session output drawer
      a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
      squares = [x**2 for x in a]
      squares
@@ -214,7 +216,7 @@
 
    Using the =map= built-in, we can achive the same result.
 
-   #+begin_src python :session example
+   #+begin_src python :session output drawer
      a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
      squares = map(lambda x: x**2, a)
      squares
@@ -225,23 +227,159 @@
 
    Filtering a /list comprehension/ is more concise than =map=/=filter=.
 
-   #+begin_src python :session example
+   #+begin_src python :session drawer
      a = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
      lc_even_squares = [x**2 for x in a if x % 2 == 0] # Concise!
      mf_even_squares = map(lambda x: x**2, filter(lambda x: x % 2 == 0, a)) # VERBOSE
    #+end_src
 
-   #+RESULTS:
+   *Takeaways*
 
    - List comprehensions are clearer than =map= and =filter= because no need for =lambda=.
    - List comprehensions allow you to skip items from the list. =map= can't without =filter= and =lambda=s
    - Dicts and =sets= also support comprehension expressions.
 
-** TODO 8. Avoid More Than Two Expressions in List Comprehensions
+** DONE 8. Avoid More Than Two Expressions in List Comprehensions
+   CLOSED: [2019-05-31 Fri 22:33]
+   - State "DONE"       from "IN-PROGRESS" [2019-05-31 Fri 22:33]
+   - State "IN-PROGRESS" from "TODO"       [2019-05-31 Fri 22:28]
+   :LOGBOOK:
+   CLOCK: [2019-05-31 Fri 22:26]--[2019-05-31 Fri 22:33] =>  0:07
+   :END:
 
-** TODO 9. Consider Generator Expressions for Large Comprehensions
+   Using two list comprehensions to flatten a matrix.
 
-** TODO 10. Prefer =enumerate= over =range=
+   #+begin_src python :session 
+     matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+     flat = [x for row in matrix for x in row]
+     flat
+   #+end_src
+
+   #+RESULTS:
+   | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+
+   This is readable and simple, but any more than two, and it starts to get messy.
+
+   *Takeaways*
+   
+   While list comprehensions support multiple levels of loops and multiple conditions per loop level, any more than two should are difficult to read and be avoided. 
+
+** DONE 9. Consider Generator Expressions for Large Comprehensions
+   CLOSED: [2019-05-31 Fri 22:56]
+   - State "DONE"       from "IN-PROGRESS" [2019-05-31 Fri 22:56]
+   :LOGBOOK:
+   CLOCK: [2019-05-31 Fri 22:34]--[2019-05-31 Fri 22:56] =>  0:22
+   :END:
+
+   List comprehensions create a new list based off of the expressions.
+   While this is good for small lists, it could end up consuming significant amounts of memory for large lists.
+
+   #+begin_src python :session
+     val = [len(x) for x in open('/tmp/small_file.txt')]
+     print(val) # not bad for small files, but horrible for large files.
+   #+end_src
+   
+   Prefer generators, which return an iterator instead of a new list. 
+   
+   #+begin_src python :session :results output
+     iter = (len(x) for x in ['hello', 'how', 'do', 'you', 'do'])
+     print(next(iter))   # len('hello')
+     print(next(iter))   # len('how')
+     print(next(iter))   # len('do')
+   #+end_src
+
+   #+RESULTS:
+   : 5
+   : 3
+   : 2
+
+   Compose Generators
+   
+   #+begin_src python :session :results output
+     iter = (len(x) for x in ['hello', 'how', 'do', 'you', 'do'])
+     roots = ((x, x**0.5) for x in iter)
+     print(next(roots)) # next(roots) also advances iter
+     print(next(roots))
+     print(next(roots))
+   #+end_src
+
+   #+RESULTS:
+   : (5, 2.23606797749979)
+   : (3, 1.7320508075688772)
+   : (2, 1.4142135623730951)
+
+   *Takeaways*
+   
+   - Memory is a limitation with list comprehensions.
+   - Generator expressions produce outputs one at a time, which avoids memory issues.
+   - Generators expressions can be composed by passing an interator from a generator into the =for= of another.
+   - Generator expressions are /fast/ when chained together.
+
+** DONE 10. Prefer =enumerate= over =range=
+   CLOSED: [2019-05-31 Fri 23:22]
+   - State "DONE"       from "IN-PROGRESS" [2019-05-31 Fri 23:22]
+   :LOGBOOK:
+   CLOCK: [2019-05-31 Fri 23:08]--[2019-05-31 Fri 23:22] =>  0:14
+   :END:
+
+   Use =range= for loops that iterate over a set of integers.
+
+   #+begin_src python :session
+     random_bits = 0
+     for i in range(64):
+         if randint(0, 1):
+             random_bits |= 1 << i
+   #+end_src
+
+   For data structures you need to iterate over, loop directly over the sequence.
+
+   #+begin_src python :session :results output
+     people = ['george', 'joe', 'harry', 'ivy']
+     for person in people:
+         print('%s is a person' % person)
+   #+end_src
+
+   #+RESULTS:
+   : george is a person
+   : joe is a person
+   : harry is a person
+   : ivy is a person
+
+   Prefer =enumerate= over =range= when you need the index along with the data.
+   
+   #+begin_src python :session :results output
+     people = ['george', 'joe', 'harry', 'ivy']
+     for i in range(len(people)):
+         print('%d: %s' % (i + 1, people[i])) # Pretty horrible
+
+     for i, person in enumerate(people):
+         print('%d: %s' % (i + 1, person)) # Pretty nice
+
+     for i, person in enumerate(people, 1): # Start i at 1
+         print('%d: %s' % (i, person)) # Pretty nice without arithmetic
+   #+end_src
+
+   #+RESULTS:
+   #+begin_example
+   1: george
+   2: joe
+   3: harry
+   4: ivy
+   1: george
+   2: joe
+   3: harry
+   4: ivy
+   1: george
+   2: joe
+   3: harry
+   4: ivy
+   #+end_example
+
+   *Takeaways*
+
+   - =enumerate= provides concise syntax for looping over an iterator and getting the index of each item from the iterator as you go.
+   - Prefer =enumerate= over =range= and avoid indexing into a sequence.
+   - =enumerate(iterable, {start_count})= supply a second param to =enumerate= to specify a starting count.
 
 ** TODO 11. Use =zip= to Process Iterators in Parallel
 
@@ -262,3 +400,15 @@
 * Collaboration
 
 * Production
+
+#+BEGIN: clocktable :scope file :maxlevel 2
+#+CAPTION: Clock summary at [2019-05-31 Fri 23:22]
+| Headline                                     | Time   |      |
+|----------------------------------------------+--------+------|
+| *Total time*                                 | *0:43* |      |
+|----------------------------------------------+--------+------|
+| Pythonic Thinking                            | 0:43   |      |
+| \_  8. Avoid More Than Two Expressions in... |        | 0:07 |
+| \_  9. Consider Generator Expressions for... |        | 0:22 |
+| \_  10. Prefer =enumerate= over =range=      |        | 0:14 |
+#+END:
