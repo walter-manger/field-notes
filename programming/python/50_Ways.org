@@ -324,7 +324,7 @@
 
    Use =range= for loops that iterate over a set of integers.
 
-   #+begin_src python :session
+   #+begin_src python :session 
      random_bits = 0
      for i in range(64):
          if randint(0, 1):
@@ -333,7 +333,7 @@
 
    For data structures you need to iterate over, loop directly over the sequence.
 
-   #+begin_src python :session :results output
+   #+begin_src python :session :results output :exports both
      people = ['george', 'joe', 'harry', 'ivy']
      for person in people:
          print('%s is a person' % person)
@@ -347,7 +347,7 @@
 
    Prefer =enumerate= over =range= when you need the index along with the data.
    
-   #+begin_src python :session :results output
+   #+begin_src python :session :results output :exports both
      people = ['george', 'joe', 'harry', 'ivy']
      for i in range(len(people)):
          print('%d: %s' % (i + 1, people[i])) # Pretty horrible
