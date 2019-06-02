@@ -1,0 +1,12 @@
+#+TITLE: Dotnet Core Installation & Environment
+#+STARTUP: logdone
+#+OPTIONS: toc:nil num:nil
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+
+* Setting Up MacOS
+  - Download & Install =dotnet= (.NET Core)
+  - Download & Install =mono= (Mono Project)
+  - Enable *OmniSharp* for editing .net projects in Emacs
+
+

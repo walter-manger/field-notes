@@ -150,7 +150,7 @@
 
 *** Reference Materials
 
-**** TODO [[file:programming/python/50_Ways.org][Effective Python]]
+**** TODO [[file:programming/python/59_Ways.org][Effective Python]]
    
 **** TODO Think Complexity
      

@@ -1,6 +1,6 @@
 #+TITLE: 59 Ways To Improve Python
 #+STARTUP: logdone
-#+OPTIONS: toc:2 num:nil
+#+OPTIONS: toc:nil num:nil
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
 * Pythonic Thinking
@@ -382,7 +382,51 @@
    - Prefer =enumerate= over =range= and avoid indexing into a sequence.
    - =enumerate(iterable, {start_count})= supply a second param to =enumerate= to specify a starting count.
 
-** TODO 11. Use =zip= to Process Iterators in Parallel
+** DONE 11. Use =zip= to Process Iterators in Parallel
+   CLOSED: [2019-06-01 Sat 23:08]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-01 Sat 23:08]
+   :LOGBOOK:
+   CLOCK: [2019-06-01 Sat 22:54]--[2019-06-01 Sat 23:08] =>  0:14
+   :END:
+
+   Iterate over multiple lists in parallel efficiently (in Python 3)
+
+   #+begin_src python :session 
+     names = ['George', 'Ella', 'Mary']
+     letters = [len(n) for n in names]
+
+     # find the longest name, with range and messy code
+     longest_name = None
+     max_letters = 0
+
+     for i in range(len(names)):
+         count = letters[i]
+         if count > max_letters:
+             longest_name = names[i]
+             max_letters = count
+
+     print(longest_name)
+
+     # slightly better using enumerate
+     for i, name in enumerate(names):
+         count = letters[i]
+         if count > max_letters:
+             longest_name = name # Fixed an index retrieval here
+             max_letters = count
+
+     # Just use zip
+     for name, count in zip(names, letters):
+         if count > max_letters:
+             longest_name = name
+             max_letters = count
+   #+end_src
+
+   *Takeaways*
+   
+   - =zip= can be used to iterate over multiple iterators in parallel
+   - =zip= is a /lazy/ generator that produces tuples in Python 3. In Python 2 returns the full result as a list of tuples (Memory!)
+   - =zip= truncates it output for lists of different lengths
+   - Use =zip_longest= from =itertools= to iterate multiple iterators in parallel regardless of mismatched lengths
 
 ** TODO 12. Avoid =else= Blocks After =for= and =while= Loops
 
@@ -401,15 +445,18 @@
 * Collaboration
 
 * Production
+  
+* Time
 
 #+BEGIN: clocktable :scope file :maxlevel 2
-#+CAPTION: Clock summary at [2019-05-31 Fri 23:22]
+#+CAPTION: Clock summary at [2019-06-01 Sat 23:09]
 | Headline                                     | Time   |      |
 |----------------------------------------------+--------+------|
-| *Total time*                                 | *0:43* |      |
+| *Total time*                                 | *0:57* |      |
 |----------------------------------------------+--------+------|
-| Pythonic Thinking                            | 0:43   |      |
+| Pythonic Thinking                            | 0:57   |      |
 | \_  8. Avoid More Than Two Expressions in... |        | 0:07 |
 | \_  9. Consider Generator Expressions for... |        | 0:22 |
 | \_  10. Prefer =enumerate= over =range=      |        | 0:14 |
+| \_  11. Use =zip= to Process Iterators in... |        | 0:14 |
 #+END:
