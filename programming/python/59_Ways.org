@@ -428,11 +428,201 @@
    - =zip= truncates it output for lists of different lengths
    - Use =zip_longest= from =itertools= to iterate multiple iterators in parallel regardless of mismatched lengths
 
-** TODO 12. Avoid =else= Blocks After =for= and =while= Loops
+** DONE 12. Avoid =else= Blocks After =for= and =while= Loops
+   CLOSED: [2019-06-03 Mon 22:31]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-03 Mon 22:31]
+   :LOGBOOK:
+   CLOCK: [2019-06-03 Mon 22:21]--[2019-06-03 Mon 22:31] =>  0:10
+   :END:
 
-** TODO 13. Take Advantage of Each Block in =try/except/else/finally=
+   While you could put =else= after =for= and =while=, why on earth would you do so?
+   
+   #+begin_src python :session :results output :export both
+     for i in range(3):
+         print('%d' % i)
+     else:
+         print('why?!!!') # this runs when the loop is finished
+   #+end_src
 
+   #+RESULTS:
+   : 0
+   : 1
+   : 2
+   : why?!!!
+
+   What it really means is: If the loop is done, hit the =else=.
+
+   #+begin_src python :session :results output :export both
+     for i in range(3):
+         print('%d' % i)
+         if i == 1:
+             break
+     else:
+         print('why?!!!') # Does not get hit because the loop did not "finish"
+   #+end_src
+
+   #+RESULTS:
+   : 0
+   : 1
+
+   *Takeaways*
+   
+   - Python supports an =else= after =for= and =while= loops
+   - =else= runs if the loop did not encounter a =break=
+   - Avoid =else= after loops because it is not intuitive
+
+** DONE 13. Take Advantage of Each Block in =try/except/else/finally=
+   CLOSED: [2019-06-04 Tue 23:05]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-04 Tue 23:05]
+   :LOGBOOK:
+   CLOCK: [2019-06-04 Tue 22:45]--[2019-06-04 Tue 23:05] =>  0:20
+   :END:
+
+   Finally Blocks: Primarily for cleanup code. Common Example:
+   
+   #+begin_src python :session
+     handle = open('/tmp/something.txt')   # Exceptions here should bubble up and skip the finally below
+     try:
+         data = handle.read()
+     finally:
+         handle.close()  # Always runs after try:
+   #+end_src
+
+   Use =else= when you want to perform some operation if no exceptions occur
+
+   #+begin_src python :session
+     def load_json_key(data, key):
+         try:
+             result_dict = json.loads(data)    # May raise ValueError
+         except ValueError as e:
+             raise KeyError from e
+         else:
+             return result_dict[key]           # May raise KeyError (Bubble up)
+   #+end_src
+
+   Keeping everything in one compound statement:
+   
+   #+begin_src python :session
+     UNDEFINED = object()
+
+     def divide_json(path):
+         handle = open(path, 'r+')   # May raise IOError (Bubble up)
+         try:
+             data = handle.read()    # May raise UnicodeDecodeError (Bubble up)
+             op = json.loads(data)   # May raise ValueError (Bubble up)
+             value = (
+                 op['numerator'] /
+                 op['denominator'])  # May raise ZeroDivisionError
+         except ZeroDivisionError as e:
+             return UNDEFINED
+         else:
+             op['result'] = value
+             result = json.dumps(op)
+             handle.seek(0)
+             handle.write(result)    # May raise IOError (Bubble up)
+             return value
+         finally:
+             handle.close()          # Always runs
+   #+end_src
+
+   *Takeaways*
+
+   - =try/finally= lets you run cleanup code regardless whether exceptions were raised in the =try= block
+   - =else= helps minimizes the code in =try= blocks and visually distinguish the success case from the =try/except= blocks
+   - An =else= block can be used to perform additional actions after a successful =try= block but before common cleanup in a =finally=
+
+     
 * Functions
+
+** DONE 14. Prefer Exceptions to Returning =None=
+   CLOSED: [2019-06-05 Wed 22:18]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-05 Wed 22:18]
+   :LOGBOOK:
+   CLOCK: [2019-06-05 Wed 22:00]--[2019-06-05 Wed 22:18] =>  0:18
+   :END:
+
+   In some cases, returning =None= is error prone. 
+   
+   #+begin_src python :session :results output
+     def divide(a, b):
+         try:
+             return a / b
+         except ZeroDivisionError:
+             return None
+
+     # Consuming this way *could* work
+
+     result = divide(x, y)
+     if result is None:
+         print('Invalid inputs')
+
+     # Consuming this way is incorrect
+
+     result = divide(0, 5)  # Evaluates to 0
+     if not result:
+         print('Invalid inputs') # WRONG!
+   #+end_src
+
+   One way to reduce the chance of errors
+
+   #+begin_src python :session :results output
+     def divide(a, b):
+         try:
+             return True, a / b
+         except ZeroDivisionError:
+             return False, None
+
+     # Consuming
+
+     success, result = divide(x, y)
+     if not success:
+         print('Invalid Inputs')
+
+     # But, it allows consumers to skip the success portion like:
+
+     _, result = divide(x, y)
+     if not result:
+         print('Invalid Inputs')
+   #+end_src
+
+
+   The better way
+
+   #+begin_src python :session :results output
+     def divide(x, y):
+         try:
+             return x / y
+         except ZeroDivisionError as e:
+             raise ValueError('Invalid inputs') from e
+
+     # Let the consumer handle the error
+
+     try:
+         result = divide(5, 2)
+     except ValueError:
+         print('Invalid Inputs')
+     else:
+         print('Result is %.1f' % result)
+   #+end_src
+
+   #+RESULTS:
+   : Python 3.6.2 (default, Feb 25 2018, 09:55:00) 
+   : [GCC 4.2.1 Compatible Apple LLVM 9.0.0 (clang-900.0.39.2)] on darwin
+   : Type "help", "copyright", "credits" or "license" for more information.
+   : Result is 2.5
+   
+   *Takeaways*
+
+   - Functions that return =None= to indicate special meaning are error prone because =None= and other values (0, '') all evaluate to =False= in conditional expressions
+   - Raise exceptions to indicate special situations instead of returning =None=. Expect the calling code to handle exceptions properly when they're documented
+
+** TODO 15. Know How Closures Interact with Variable Scope
+** TODO 16. Consider Generators Instead of Returning Lists
+** TODO 17. Be Defensive When Iterating Over Arguments
+** TODO 18. Reduce Visual Noise with Variable Positional Arguments
+** TODO 19. Provide Optional Behavior with Keyword Arguments
+** TODO 20. Use None and Docstrings to Specify Dynamic Default Arguments
+** TODO 21. Enforce Clarity with Keyword-Only Arguments
 
 * Classes and Inheritance
 
@@ -449,14 +639,18 @@
 * Time
 
 #+BEGIN: clocktable :scope file :maxlevel 2
-#+CAPTION: Clock summary at [2019-06-01 Sat 23:09]
-| Headline                                     | Time   |      |
+#+CAPTION: Clock summary at [2019-06-05 Wed 22:18]
+| Headline                                     |   Time |      |
 |----------------------------------------------+--------+------|
-| *Total time*                                 | *0:57* |      |
+| *Total time*                                 | *1:45* |      |
 |----------------------------------------------+--------+------|
-| Pythonic Thinking                            | 0:57   |      |
+| Pythonic Thinking                            |   1:27 |      |
 | \_  8. Avoid More Than Two Expressions in... |        | 0:07 |
 | \_  9. Consider Generator Expressions for... |        | 0:22 |
 | \_  10. Prefer =enumerate= over =range=      |        | 0:14 |
 | \_  11. Use =zip= to Process Iterators in... |        | 0:14 |
+| \_  12. Avoid =else= Blocks After =for=...   |        | 0:10 |
+| \_  13. Take Advantage of Each Block in...   |        | 0:20 |
+| Functions                                    |   0:18 |      |
+| \_  14. Prefer Exceptions to Returning...    |        | 0:18 |
 #+END:
