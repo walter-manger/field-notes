@@ -1,225 +1,88 @@
 #+TITLE: Field Notes
 #+STARTUP: logdone
-#+TODO: TODO IN-PROGRESS(!) | DONE(!)
+#+TODO: TODO IN-PROGRESS | DONE(!)
 
 
 * λ Programming Language Learning
 
+** Elixir
+   
+*** Reference Materials
+
+**** TODO Environment Setup
+     https://elixir-lang.org/install.html
+     https://zohaib.me/spacemacs-and-alchemist-to-make-elixir-of-immortality/
+     
+**** TODO The Joy of Elixir
+     https://joyofelixir.com/toc.html
+
 ** Haskell
 
-*** DONE Reference Materials
-    CLOSED: [2019-05-08 Wed 10:59]
-
-    - [[https://www.quora.com/What-are-the-best-resources-for-learning-Haskell][Quora - Best Resources For Learning Haskell]]
-
-**** Notable
-
-     - https://wiki.haskell.org/Research_papers/Functional_pearls
-
-       
-*** TODO 99 Haskell Problems
-
-*** TODO Haskell Environment Setup
+*** Reference Materials
     
-    I am using the following links for inspiration.
+**** TODO Functional Pearls
      
-    - [[https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/][An Opinionated Guide To Haskell In 2018]]
-    - [[https://touk.pl/blog/2015/10/14/getting-started-with-haskell-stack-and-spacemacs/][Getting Started with Haskell, Stack, and Spacemacs]] (remember, don't =stack install= unless you want something in `~/.local/bin`)
-       
-**** Start A New Project
+     https://wiki.haskell.org/Research_papers/Functional_pearls
+     
+**** TODO [[file:programming/haskell/Environment_Setup.org][Environment Setup]]
+**** TODO [[file:programming/haskell/learn_you_a_haskell/Learn_You_A_Haskell.org][Learn You A Haskell for Great Good]]
+**** TODO 99 Haskell Problems
+**** TODO Real World Haskell
+     
+     Another pretty good resource for learning real-world programming with Haskell.
+     http://book.realworldhaskell.org/read/
 
-     #+BEGIN_SRC bash
-       stack build --copy-compiler-tool ghc-mod hoogle weeder stylish-haskell
-     #+END_SRC
-
-*** TODO Learn You A Haskell
     
-    http://learnyouahaskell.com/chapters   
-
-
-    #+begin_src haskell :exports both
-      doubleMe x = x + x
-      doubleMe 2
-    #+end_src
-
-    #+RESULTS:
-    : 4
-
-    #+begin_src haskell :exports both
-      head' :: [a] -> a
-      head' [] = error "Can't call head on an empty list, dummy!"
-      head' (x:_) = x
-
-     head' [8,1,2,3]
-      
-    #+end_src
-
-    #+RESULTS:
-    : 8
-
-
-    #+begin_src haskell :exports both
-      someSum :: (Num a) => [a] -> a
-      someSum [] = 0
-      someSum (x:xs) = x + someSum xs
-      someSum [1,2]
-    #+end_src
-
-    #+RESULTS:
-    : *** Exception: <interactive>:45:1-31: Non-exhaustive patterns in function someSum
-
-
-    - [X] Chapter 1
-    - [X] Chapter 2
-    - [X] Chapter 3
-    - [ ] Chapter 4
-    - [ ] Chapter 5
-    - [ ] Chapter 6
-    - [ ] Chapter 7
-    - [ ] Chapter 8
-    - [ ] Chapter 9
-    - [ ] Chapter 10
-    - [ ] Chapter 11
-    - [ ] Chapter 12
-    - [ ] Chapter 13
-    - [ ] Chapter 14
-
-*** TODO Real World Haskell
-
-    Another pretty good resource for learning real-world programming with Haskell.
-
-    http://book.realworldhaskell.org/read/
- 
-    
-** Scheme / Chicken
+** Javascript
    
-*** TODO Reference Materials
-    
-    - Environment: https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/scheme
-    - SICP Exercises: https://github.com/zv/SICP-guile
-    - SICP Book: https://github.com/zv/SICP-guile
-
-*** DONE Environment Setup
-  
-    We're using Chicken and Guile, so install them from brew.
-    
-    #+begin_src bash
-      brew update && brew install chicken && brew install guile
-    #+end_src
-
-    Since I am using Spacemacs, there is a layer for interacting with Scheme (Chicken/Guile). 
-   
-    Add the scheme layer to emacs.
+*** Reference Materials
  
-    #+begin_src elisp
-      (defun dotspacemacs/layers ()
-        (setq-default
-         dotspacemacs-configuration-layers
-         '(scheme)))
-    #+end_src
-    
+**** TODO [[file:programming/javascript/The_Good_Parts.org][JavaScript: The Good Parts]]
+
+**** TODO Thinking In Ramda
+     http://randycoulman.com/blog/categories/thinking-in-ramda/
+
 ** Python
-
-*** Data Structures
-
-**** TODO List
-
-     #+begin_src python
-       # Initializing
-       numbers = [1,2,3,4,5,6]
-
-       # Getting by Index
-       first = numbers[0]
-
-     #+end_src
-
-     #+RESULTS:
-     : None
-
-
-**** TODO Tuple
-
-     Use when: 
-
-**** Dict
-
-     
-*** TODO List Comprehensions
-    
-    Use when: 
 
 *** Reference Materials
 
-**** TODO [[file:programming/python/59_Ways.org][Effective Python]]
-   
+**** TODO Environment Setup
+**** IN-PROGRESS [[file:programming/python/59_Ways.org][Effective Python]]
 **** TODO Think Complexity
-     
 **** TODO Music for Geeks and Nerds
      https://pedrokroger.net/mfgan/
  
 **** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
 
-** Javascript
-
-*** Definitions
-
-**** Prototypical Inheritance
      
-**** Closure
-     
-     #+begin_quote
-     A /closure/ is the combination of a function and the lexical environment within which that function was declared.
-     
-     -- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
-     #+end_quote
-
-     In other words, a /closure/ is a function that is created in the body of another function, which has access to the outer function's scope. 
-
-     _Why?_ It is JavaScript's way of avoiding global scope, aka Encapsulation.
-
-     #+begin_src js
-       function init() {
-           var name = 'George Washington';
-           function displayName() { // <-- This is a closure
-               console.log(name);   // <-- Has access to the name var outside of its scope
-           }
-           displayName();
-       }
-
-       init();
-     #+end_src
-
-     #+RESULTS:
-     : George Washington
-     : undefined
-
+** Scheme / Chicken
+   
+*** TODO [[file:programming/scheme/Environment_Setup.org][Environment Setup]]
+   
+*** TODO Reference Materials
     
-*** Reference Materials
+    - SICP Exercises: https://github.com/zv/SICP-guile
+    - SICP Book: https://github.com/zv/SICP-guile
+
+* Programming Paradigms
  
-**** Thinking In Ramda
-     http://randycoulman.com/blog/categories/thinking-in-ramda/
-     
-     
-
-* Object Oriented Programming
+** Object Oriented Programming
   
-** TODO Definitions (Pillars)
+*** TODO Definitions (Pillars)
 
-*** TODO 1. Abstraction 
+**** TODO 1. Abstraction 
     
-*** TODO 2. Encapsulation 
+**** TODO 2. Encapsulation 
     
-*** TODO 3. Inheritance 
+**** TODO 3. Inheritance 
     
-*** TODO 4. Polymorphism 
+**** TODO 4. Polymorphism 
 
-*** TODO Compare Polymorphism and Inheritance
+**** TODO Compare Polymorphism and Inheritance
 
-    https://techdifferences.com/difference-between-inheritance-and-polymorphism.html
-
+     https://techdifferences.com/difference-between-inheritance-and-polymorphism.html
 
 * Design Patterns
-
  
 * Cloud Architecture
 
@@ -231,4 +94,8 @@
        
 *** Reference Materials
     
-**** TODO [[file:infrastructure/aws/aws_solutions_architect_associate.org][AWS Certified Solutions Architect Associate]]
+**** TODO [[file:infrastructure/aws/aws_solutions_architect_associate.org][AWS Certified Solutions Architect Associate Study Notes]]
+     
+* Emacs & Elisp
+  
+

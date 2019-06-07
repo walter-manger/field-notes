@@ -1,11 +1,11 @@
 #+TITLE: Think Complexity
 #+STARTUP: logdone
-#+TODO: TODO IN-PROGRESS(!) | DONE(!)
+#+TODO: TODO IN-PROGRESS | DONE(!)
 
 Reading: http://www.greenteapress.com/complexity/html/index.html
 
 * TODO Chapter 1 - Complexity Science
-
+  
 * TODO Chapter 2 - Graphs
 
 * TODO Chapter 3 - Analysis of Algorithms

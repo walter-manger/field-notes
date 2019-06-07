@@ -1,6 +1,6 @@
-#+TITLE: AWS Solutions Architect Associate
+#+TITLE: AWS Solutions Architect Associate Study Notes
 #+STARTUP: logdone
-#+TODO: TODO IN-PROGRESS(!) | DONE(!)
+#+TODO: TODO IN-PROGRESS | DONE(!)
 
 https://aws.amazon.com/certification/
 

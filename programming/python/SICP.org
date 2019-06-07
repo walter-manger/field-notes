@@ -1,6 +1,6 @@
 #+TITLE: Structure and Interpretation of Computer Programs
 #+STARTUP: logdone
-#+TODO: TODO IN-PROGRESS(!) | DONE(!)
+#+TODO: TODO IN-PROGRESS | DONE(!)
 
 http://www.composingprograms.com/
 Homework: https://cs61a.org/

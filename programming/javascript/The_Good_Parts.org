@@ -1,0 +1,35 @@
+#+TITLE: Notes on /The Good Parts/ of JavaScript
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+
+* Prototypical Inheritance
+
+* Closures
+  
+     #+begin_quote
+     A /closure/ is the combination of a function and the lexical environment within which that function was declared.
+     
+     -- https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+     #+end_quote
+
+     In other words, a /closure/ is a function that is created in the body of another function, which has access to the outer function's scope. 
+
+     _Why?_ It is JavaScript's way of avoiding global scope, aka Encapsulation.
+
+     #+begin_src js :exports both
+       function init() {
+           var name = 'George Washington';
+           function displayName() { // <-- This is a closure
+               console.log(name);   // <-- Has access to the name var outside of its scope
+           }
+           displayName();
+       }
+
+       init();
+     #+end_src
+
+     #+RESULTS:
+     : George Washington
+     : undefined
+

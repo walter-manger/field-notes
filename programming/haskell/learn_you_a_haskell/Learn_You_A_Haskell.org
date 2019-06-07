@@ -1,0 +1,21 @@
+#+TITLE: Notes on /Learn You A Haskell For Great Good/
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+http://learnyouahaskell.com/chapters   
+
+* DONE Chapter 1
+* DONE Chapter 2
+* DONE Chapter 3
+* TODO Chapter 4
+* TODO Chapter 5
+* TODO Chapter 6
+* TODO Chapter 7
+* TODO Chapter 8
+* TODO Chapter 9
+* TODO Chapter 10
+* TODO Chapter 11
+* TODO Chapter 12
+* TODO Chapter 13
+* TODO Chapter 14
+
