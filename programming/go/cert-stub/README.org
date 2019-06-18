@@ -1,0 +1,29 @@
+#+TITLE: Certifier - Generate Certificates for Domains
+
+* Running the Server
+  
+#+begin_src bash
+  go run main.go
+#+end_src
+
+Example Output
+
+#+begin_src bash
+2019/06/17 23:11:38 Starting Cert-Stub Server...
+
+2019/06/17 23:11:38 Certifier API accepting connections on port 8080
+#+end_src
+
+** Features
+
+   1. Generates Certificates for domains /Concurrently/
+   2. Will only generate certificates when there isn't already a certificate that is no expired
+   3. Shuts down gracefully, meaning that it will wait until all jobs are /Done/ before shutting down.
+
+* Running the Integration Tests
+  
+#+begin_src bash
+  go test -tags=integration
+#+end_src
+
+Try running this multiple times or even in parallel to see how the server handles it.

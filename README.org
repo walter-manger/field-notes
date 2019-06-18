@@ -65,7 +65,7 @@
     - SICP Book: https://github.com/zv/SICP-guile
 
 * Programming Paradigms
- 
+  
 ** Object Oriented Programming
   
 *** TODO Definitions (Pillars)
@@ -88,10 +88,6 @@
 
 ** AWS
 
-*** SQS
-
-    1. Make sure you know how to fail properly
-       
 *** Reference Materials
     
 **** TODO [[file:infrastructure/aws/aws_solutions_architect_associate.org][AWS Certified Solutions Architect Associate Study Notes]]
