@@ -616,7 +616,129 @@
    - Functions that return =None= to indicate special meaning are error prone because =None= and other values (0, '') all evaluate to =False= in conditional expressions
    - Raise exceptions to indicate special situations instead of returning =None=. Expect the calling code to handle exceptions properly when they're documented
 
-** TODO 15. Know How Closures Interact with Variable Scope
+** DONE 15. Know How Closures Interact with Variable Scope
+   CLOSED: [2019-06-18 Tue 21:55]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-18 Tue 21:55]
+   :LOGBOOK:
+   CLOCK: [2019-06-18 Tue 21:31]--[2019-06-18 Tue 21:55] =>  0:24
+   :END:
+  
+   Sorting a list by using a priority helper function (closure) works pretty well for simple inputs.
+ 
+   #+begin_src python :session :results output :exports both
+     def sort_priority(values, group):
+         def helper(x):
+             if x in group:
+                 return (0, x)
+             return (1, x)
+         values.sort(key=helper)
+
+
+     numbers = [8, 3, 1, 2, 5, 4, 7, 6]
+     group = {2, 3, 5, 7}
+     sort_priority(numbers, group)
+     print(numbers)
+   #+end_src
+
+  #+RESULTS:
+  : [2, 3, 5, 7, 1, 4, 6, 8]
+  : 
+  : 
+
+  Trying to keep track of whether an item was found in the group is a little different.
+
+   #+begin_src python :session :results output :exports both
+     def sort_priority(values, group):
+         found = False           # Scope: 'sort_priority'
+         def helper(x):
+             if x in group:
+                 found = True    # Scope: 'helper'
+                 return (0, x)
+             return (1, x)
+         values.sort(key=helper)
+         return found
+
+
+     numbers = [8, 3, 1, 2, 5, 4, 7, 6]
+     group = {2, 3, 5, 7}
+     found = sort_priority(numbers, group)
+     print(found)
+     print(numbers)
+   #+end_src
+
+   #+RESULTS:
+   : False
+   : [2, 3, 5, 7, 1, 4, 6, 8]
+   : 
+   : 
+
+  The `print(found)` value is incorrect because of scoping issues. Let's try to get it using `nonlocal`.
+
+   #+begin_src python :session :results output :exports both
+     def sort_priority(values, group):
+         found = False           # Scope: 'sort_priority'
+         def helper(x):
+             nonlocal found      # Scope: 'sort_priority' or the next scope up
+             if x in group:
+                 found = True    
+                 return (0, x)
+             return (1, x)
+         values.sort(key=helper)
+         return found
+
+
+     numbers = [8, 3, 1, 2, 5, 4, 7, 6]
+     group = {2, 3, 5, 7}
+     found = sort_priority(numbers, group)
+     print(found)
+     print(numbers)
+   #+end_src
+
+   #+RESULTS:
+   : True
+   : [2, 3, 5, 7, 1, 4, 6, 8]
+   : 
+   : 
+
+   Here the value for `print(found)` is correct now, but using `nonlocal` for anything but simple functions is BAD.
+   
+   Another solution is to wrap the state in a helper class.
+   
+   #+begin_src python :session :results output :exports both
+     class Sorter(object):
+         def __init__(self, group):
+             self.group = group
+             self.found = False
+
+         def __call__(self, x):
+             if x in self.group:
+                 self.found = True
+                 return (0, x)
+             return (1, x)
+
+     group = {2, 3, 5, 7}
+     sorter = Sorter(group)
+     numbers = [8, 3, 1, 2, 5, 4, 7, 6]
+     numbers.sort(key=sorter)
+     print(sorter.found)
+     print(numbers)
+   #+end_src
+
+   #+RESULTS:
+   : True
+   : [2, 3, 5, 7, 1, 4, 6, 8]
+   : 
+   : 
+
+   
+   *Takeaways*
+
+   - Closure functions can refer to veriables from any of the scopes in which they were defined.
+   - By default, closures can't affect enclosing scopes by assigning variables.
+   - In Python 3, use the `nonlocal` statement to indicate when a closure can modify a variable in its enclosing scopes.
+   - Avoid using `nonlocal` statements for anything beyond simple functions.
+
+
 ** TODO 16. Consider Generators Instead of Returning Lists
 ** TODO 17. Be Defensive When Iterating Over Arguments
 ** TODO 18. Reduce Visual Noise with Variable Positional Arguments
