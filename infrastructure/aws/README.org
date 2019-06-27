@@ -1,0 +1,7 @@
+#+TITLE: AWS
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* Reference Materials
+
+** TODO [[file:aws_solutions_architect_associate.org][AWS Certified Solutions Architect Associate Study Notes]]

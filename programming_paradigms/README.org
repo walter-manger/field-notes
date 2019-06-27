@@ -1,0 +1,20 @@
+#+TITLE: Programming Paradigms
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* Object Oriented Programming
+  
+** TODO Definitions (Pillars)
+
+*** TODO 1. Abstraction 
+    
+*** TODO 2. Encapsulation 
+    
+*** TODO 3. Inheritance 
+    
+*** TODO 4. Polymorphism 
+
+*** TODO Compare Polymorphism and Inheritance
+
+    https://techdifferences.com/difference-between-inheritance-and-polymorphism.html
+

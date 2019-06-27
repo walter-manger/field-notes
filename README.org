@@ -7,6 +7,8 @@
 
 ** [[file:programming/elixir/][Elixir]]
    
+** [[file:programming/go/][Golang]]
+   
 ** [[file:programming/haskell/][Haskell]]
 
 ** [[file:programming/javascript/][Javascript]]
@@ -15,34 +17,18 @@
 
 ** [[file:programming/lisp/][Lisp]]
    
-* Programming Paradigms
+* [[file:programming_paradigms/][Programming Paradigms]]
   
-** Object Oriented Programming
-  
-*** TODO Definitions (Pillars)
-
-**** TODO 1. Abstraction 
-    
-**** TODO 2. Encapsulation 
-    
-**** TODO 3. Inheritance 
-    
-**** TODO 4. Polymorphism 
-
-**** TODO Compare Polymorphism and Inheritance
-
-     https://techdifferences.com/difference-between-inheritance-and-polymorphism.html
-
 * Design Patterns
- 
+
+* Technologies
+  
+** [[file:technologies/elastic_search/][Elastic Search]]
+   
 * Cloud Architecture
 
-** AWS
+** [[file:infrastructure/aws/][AWS]]
 
-*** Reference Materials
-    
-**** TODO [[file:infrastructure/aws/aws_solutions_architect_associate.org][AWS Certified Solutions Architect Associate Study Notes]]
-     
 * Emacs & Elisp
   
 

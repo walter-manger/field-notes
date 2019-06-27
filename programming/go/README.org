@@ -1,0 +1,7 @@
+#+TITLE: Golang
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* TODO Environment Setup
+  
+* TODO Reference Materials
