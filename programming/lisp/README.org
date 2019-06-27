@@ -2,40 +2,40 @@
 #+STARTUP: logdone
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
-* TODO Environment Setup
+** TODO Environment Setup
  
-This setup assumes OSX with `brew` installed and available.
+ This setup assumes OSX with `brew` installed and available.
 
-** DONE Get Chicken and Guile
+*** DONE Get Chicken and Guile
   
-     #+begin_src bash
-       brew update && brew install chicken && brew install guile
-     #+end_src
+      #+begin_src bash
+        brew update && brew install chicken && brew install guile
+      #+end_src
 
-** TODO Emacs (Spacemacs) Configuration
+*** TODO Emacs (Spacemacs) Configuration
   
-   https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/scheme
+    https://github.com/syl20bnr/spacemacs/tree/master/layers/%2Blang/scheme
   
-     #+begin_src elisp
-       (defun dotspacemacs/layers ()
-         (setq-default
-          dotspacemacs-configuration-layers
-          '(scheme)))
-     #+end_src
+      #+begin_src elisp
+        (defun dotspacemacs/layers ()
+          (setq-default
+           dotspacemacs-configuration-layers
+           '(scheme)))
+      #+end_src
  
-*** Tasks for a good environment [0/1]
+**** Tasks for a good environment [0/1]
 
-     - [ ] Get the REPL working with Chicken
+      - [ ] Get the REPL working with Chicken
 
-** TODO Setup Common Lisp
+*** TODO Setup Common Lisp
  
-* TODO Reference Materials
+** TODO Reference Materials
  
-** TODO Let Over Lambda
-   https://letoverlambda.com/index.cl/toc
+*** TODO Let Over Lambda
+    https://letoverlambda.com/index.cl/toc
    
-** TODO Practical Common Lisp
-   http://www.gigamonkeys.com/book/
+*** TODO Practical Common Lisp
+    http://www.gigamonkeys.com/book/
 
-** TODO MAYBE SICP
-   - SICP Exercises: https://github.com/zv/SICP-guile
+*** TODO MAYBE SICP
+    - SICP Exercises: https://github.com/zv/SICP-guile

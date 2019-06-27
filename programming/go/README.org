@@ -2,6 +2,6 @@
 #+STARTUP: logdone
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
-* TODO Environment Setup
+** TODO Environment Setup
   
-* TODO Reference Materials
+** TODO Reference Materials

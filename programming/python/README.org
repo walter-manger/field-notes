@@ -2,17 +2,17 @@
 #+STARTUP: logdone
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
-* TODO Environment Setup
+** TODO Environment Setup
  
-* TODO Reference Materials
+** TODO Reference Materials
   
-** TODO [[file:59_Ways.org][Effective Python]] 
+*** TODO [[file:59_Ways.org][Effective Python]] 
    
-** TODO Think Complexity
+*** TODO Think Complexity
    
-** TODO Music for Geeks and Nerds
-   https://pedrokroger.net/mfgan/
+*** TODO Music for Geeks and Nerds
+    https://pedrokroger.net/mfgan/
  
-** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
+*** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
 
  
