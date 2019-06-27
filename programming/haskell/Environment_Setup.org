@@ -51,3 +51,4 @@
     : *** Exception: <interactive>:4:1-31: Non-exhaustive patterns in function someSum
 
     But if I define this function in a file and compile and invoke it through the REPL, there are no issues.
+    

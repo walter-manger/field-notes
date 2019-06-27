@@ -1,0 +1,15 @@
+#+TITLE: Learning JavaScript
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* TODO Environment Setup
+  
+* TODO Reference Materials
+  
+** TODO [[file:programming/javascript/The_Good_Parts.org][JavaScript: The Good Parts]]
+
+** TODO Thinking In Ramda
+   
+   http://randycoulman.com/blog/categories/thinking-in-ramda/
+
+

@@ -7,63 +7,14 @@
 
 ** [[file:programming/elixir/][Elixir]]
    
-*** Reference Materials
+** [[file:programming/haskell/][Haskell]]
 
-**** TODO Environment Setup
-     https://elixir-lang.org/install.html
-     https://zohaib.me/spacemacs-and-alchemist-to-make-elixir-of-immortality/
-     
-**** TODO The Joy of Elixir
-     https://joyofelixir.com/toc.html
-
-** Haskell
-
-*** Reference Materials
-    
-**** TODO Functional Pearls
-     
-     https://wiki.haskell.org/Research_papers/Functional_pearls
-     
-**** TODO [[file:programming/haskell/Environment_Setup.org][Environment Setup]]
-**** TODO [[file:programming/haskell/learn_you_a_haskell/Learn_You_A_Haskell.org][Learn You A Haskell for Great Good]]
-**** TODO 99 Haskell Problems
-**** TODO Real World Haskell
-     
-     Another pretty good resource for learning real-world programming with Haskell.
-     http://book.realworldhaskell.org/read/
-
-     
-** Javascript
+** [[file:programming/javascript/][Javascript]]
    
-*** Reference Materials
- 
-**** TODO [[file:programming/javascript/The_Good_Parts.org][JavaScript: The Good Parts]]
+** [[file:programming/python/][Python]]
 
-**** TODO Thinking In Ramda
-     http://randycoulman.com/blog/categories/thinking-in-ramda/
-
-** Python
-
-*** Reference Materials
-
-**** TODO Environment Setup
-**** IN-PROGRESS [[file:programming/python/59_Ways.org][Effective Python]]
-**** TODO Think Complexity
-**** TODO Music for Geeks and Nerds
-     https://pedrokroger.net/mfgan/
- 
-**** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
-
-     
-** Scheme / Chicken
+** [[file:programming/lisp/][Lisp]]
    
-*** TODO [[file:programming/scheme/Environment_Setup.org][Environment Setup]]
-   
-*** TODO Reference Materials
-    
-    - SICP Exercises: https://github.com/zv/SICP-guile
-    - SICP Book: https://github.com/zv/SICP-guile
-
 * Programming Paradigms
   
 ** Object Oriented Programming

@@ -1,0 +1,18 @@
+#+TITLE: Learning Python
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* TODO Environment Setup
+ 
+* TODO Reference Materials
+  
+** TODO [[file:59_Ways.org][Effective Python]] 
+   
+** TODO Think Complexity
+   
+** TODO Music for Geeks and Nerds
+   https://pedrokroger.net/mfgan/
+ 
+** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
+
+ 

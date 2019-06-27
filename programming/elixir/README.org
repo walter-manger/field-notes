@@ -1,1 +1,15 @@
-TESTING
+#+TITLE: Learning Elixir
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* TODO Environment Setup
+ 
+  - https://elixir-lang.org/install.html
+  - https://zohaib.me/spacemacs-and-alchemist-to-make-elixir-of-immortality/
+
+ 
+* TODO Reference Materials
+  
+** TODO The Joy Of Elixir
+   
+   https://joyofelixir.com/toc.html

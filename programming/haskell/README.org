@@ -1,0 +1,72 @@
+#+TITLE: Learning Haskell
+#+STARTUP: logdone
+#+TODO: TODO IN-PROGRESS | DONE(!)
+
+* TODO Environment Setup
+
+** Use =Stack=
+
+*** Reference Materials
+  
+   - [[https://lexi-lambda.github.io/blog/2018/02/10/an-opinionated-guide-to-haskell-in-2018/][An Opinionated Guide To Haskell In 2018]]
+   - [[https://touk.pl/blog/2015/10/14/getting-started-with-haskell-stack-and-spacemacs/][Getting Started with Haskell, Stack, and Spacemacs]] (remember, don't =stack install= unless you want something in `~/.local/bin`)
+
+*** Starting a new project
+   
+    #+BEGIN_SRC bash
+      stack build --copy-compiler-tool ghc-mod hoogle weeder stylish-haskell
+    #+END_SRC
+
+    
+** Emacs (Spacemacs) Configuration
+
+    #+begin_src elisp
+       ;;  in dotspacemacs-configuration-layers
+          '(haskell :variables
+                     haskell-process-type 'stack-ghci
+                     haskell-completion-backend 'intero
+                     haskell-enable-hindent-style "johan-tibell"
+                     haskell-interactive-mode-hide-multi-line-errors t
+                     )
+
+      ;; Load babel for Haskell
+      (defun dotspacemacs/user-config ()
+        (org-babel-do-load-languages 'org-babel-load-languages (cons '(haskell . t) org-babel-load-languages)))
+    #+end_src
+
+    
+** Nice To Haves
+
+*** TODO A fully functional ob-haskell
+    
+    Currently, when using haskell in org-babel, there are some issues around non-trival functions.
+
+    Example:
+
+    #+begin_src haskell :exports both
+      someSum :: (Num a) => [a] -> a
+      someSum [] = 0
+      someSum (x:xs) = x + someSum xs
+      someSum [1,2]
+    #+end_src
+
+    #+RESULTS:
+    : *** Exception: <interactive>:4:1-31: Non-exhaustive patterns in function someSum
+
+    But if I define this function in a file and compile and invoke it through the REPL, there are no issues.
+
+ 
+* TODO Reference Materials
+
+** TODO Functional Pearls
+   
+   https://wiki.haskell.org/Research_papers/Functional_pearls
+ 
+** TODO [[file:learn_you_a_haskell/Learn_You_A_Haskell.org][Learn You A Haskell for Great Good]]
+   
+** TODO 99 Haskell Problems
+   
+** TODO Real World Haskell
+     
+   Another pretty good resource for learning real-world programming with Haskell.
+   http://book.realworldhaskell.org/read/
