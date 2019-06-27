@@ -5,7 +5,7 @@
 
 * λ Programming Language Learning
 
-** Elixir
+** [[file:programming/elixir/][Elixir]]
    
 *** Reference Materials
 
@@ -32,7 +32,7 @@
      Another pretty good resource for learning real-world programming with Haskell.
      http://book.realworldhaskell.org/read/
 
-    
+     
 ** Javascript
    
 *** Reference Materials

@@ -44,8 +44,62 @@ https://aws.amazon.com/architecture/well-architected/
     - Databases (RDS, DynamoDB, Redshift)
     - AWS Global Infrastructure
    
-** TODO Section 3: Identity Access Management & S3 (2019 course)
-   
+** IN-PROGRESS Section 3: Identity Access Management & S3 (2019 course)
+   :LOGBOOK:
+   CLOCK: [2019-06-24 Mon 16:44]--[2019-06-24 Mon 17:04] =>  0:20
+   :END:
+  
+*** IAM 101
+    
+    *Features*
+    
+    - Centralised control of your AWS account
+    - Shared Access to your AWS account
+    - Granular Permissions
+    - Identity Federation (AD, Facebook, LinkedIn, etc)
+    - Multifacture Auth
+    - Temp Access
+    - Password Policy
+    - Integrates with MANY AWS services
+    - PCI DSS
+
+**** Users
+     End users such as people, employees of an organization.
+ 
+**** Groups
+     A collection of users. Each user in a group will inherit the permissions of the group.
+
+**** Policies
+     Policies are made up of documents, called Policy documents. These are JSON and they give permissions as to what a User/Group/Role is able to do.
+
+**** Roles
+     Create roles and assign them to AWS resources.
+     
+*** IAM Lab
+    
+    - Create MFA for Root Account
+    - All is done on the Global Region
+    - Create a user (programatic access - access key ID and secret access key)
+    - Create a group for the user (developers -> Administrator Access) -> IAM Job Functions
+    - Send email login instructions
+    - Policies -> Look at the policy for Administrator Access
+    - Manage Password Policy (for all accounts)
+    - User -> Summary -> Security credentials to change settings for a user
+    - Create Role (S3_Admin_Access) -> Has rights to S3
+
+      
+    *Takeaways*
+    
+    - IAM is universal (not tied to a region)
+    - Root Account is the original account that set up AWS. It has COMPLETE admin access.
+    - New Users have _NO Permissions_ when first created.
+    - New Users are assigned Access Key ID & Secret Access Keys when first created. Programitic vs Console Access vs Both.
+    - You can only use Access Key ID & Secret Access Keys for programatic access.
+    - You can only view Access Key ID & Secret Access Keys once, so save CSV
+    - ALWAYS setup MFA
+    - Create your own password policies
+
+ 
 ** TODO Section 4: EC2 (2019 course)
    
 ** TODO Section 5: Databases On AWS (2019 course)
@@ -65,3 +119,15 @@ https://aws.amazon.com/architecture/well-architected/
 * TODO Purchase and take AWS Practice Exam
   
 * TODO Retake Udemy Mock Exams
+
+* Time
+  
+#+BEGIN: clocktable :scope file :maxlevel 2
+#+CAPTION: Clock summary at [2019-06-24 Mon 17:04]
+| Headline                                     | Time   |      |
+|----------------------------------------------+--------+------|
+| *Total time*                                 | *0:20* |      |
+|----------------------------------------------+--------+------|
+| Retake Udemy Course                          | 0:20   |      |
+| \_  Section 3: Identity Access Management... |        | 0:20 |
+#+END:

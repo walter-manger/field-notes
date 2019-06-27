@@ -1044,9 +1044,291 @@
    - You can check if a value is an iterator if calling =iter= on it twice produces the same result, which can then be progressed with the =next= built-in function.
 
      
-** TODO 18. Reduce Visual Noise with Variable Positional Arguments
-** TODO 19. Provide Optional Behavior with Keyword Arguments
-** TODO 20. Use None and Docstrings to Specify Dynamic Default Arguments
+** DONE 18. Reduce Visual Noise with Variable Positional Arguments
+   CLOSED: [2019-06-24 Mon 10:16]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-24 Mon 10:16]
+   :LOGBOOK:
+   CLOCK: [2019-06-24 Mon 09:48]--[2019-06-24 Mon 10:16] =>  0:28
+   :END:
+   
+   Let's start with an example.
+
+   #+begin_src python :session :results output :exports both
+     def log(message, values):
+         if not values:
+             print(message)
+         else:
+             values_str = ', '.join(str(x) for x in values)
+             print('%s: %s' % (message, values_str))
+
+     log('My numbers are', [1, 2])
+     log('No values here', [])                               # always have to pass a list 
+   #+end_src
+
+   #+RESULTS:
+   : My numbers are: 1, 2
+   : No values here
+   : 
+   : 
+
+   Here, you'd always have to consider passing a list for the =values= parameter which is cumbersome and noisy.
+
+   Let's support an optional =values= parameter.
+   
+   #+begin_src python :session :results output :exports both
+     def log(message, *values):         # that was easy
+         if not values:
+             print(message)
+         else:
+             values_str = ', '.join(str(x) for x in values)
+             print('%s: %s' % (message, values_str))
+
+     log('My numbers are', 1, 2)
+     log('No values here')                        
+
+
+     # * on the argument side unpacks a list
+     nums = [1,2,3,5,6]
+     log('Numbers?', *nums)
+   #+end_src
+
+   #+RESULTS:
+   : My numbers are: 1, 2
+   : No values here
+   : Numbers?: 1, 2, 3, 5, 6
+   : 
+   : 
+
+   There are cons to this approach. 
+
+   1. Variable arguments are always turned into a tuple before they are passed to the function. 
+
+   If the caller uses the =*= operator on a generator, it will be iterated until it is exhausted. 
+   The resulting tuple will include every value from the generator, which could consume a lot of memory and crash.
+
+   #+begin_src python :session :results output :exports both
+     def my_generator():
+         for i in range(10):
+             yield i
+
+     def my_func(*args):
+         print(args)
+
+     it = my_generator()
+     my_func(*it)              # turned into a tuple and consumed entire iterator
+
+   #+end_src
+
+   #+RESULTS:
+   : (0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+   : 
+   : 
+
+   Functions that accept =*args= are best when you know the number of inputs will be reasonably small.
+   Use when passing many literals or variable names together for readability and convenience to callers.
+  
+   2. You can't add new positional arguments to your function without migrating _every_ caller. BREAKING CHANGES.
+
+   #+begin_src python :session :results output :exports both
+     def log(sequence, message, *values):    # adding sequence
+         if not values:
+             print('%s: %s' % (sequence, message))
+         else:
+             values_str = ', '.join(str(x) for x in values)
+             print('%s: %s: %s' % (sequence, message, values_str))
+
+     log(1, 'Favs', 7, 8)
+     log('Favs', 7, 8)               # Broken visually but not easy to find why
+   #+end_src
+
+   #+RESULTS:
+   : 1: Favs: 7, 8
+   : Favs: 7: 8
+   : 
+   : 
+
+   *Takeaways*
+   
+   - Use =*args= in your function to accept a variable number of positional arguments.
+   - Use =*= to unpack a sequence into a sequence of positional arguments.
+   - Using =*args= with a generator may cause a crash due to memory.
+   - Adding new positional parameters to functions that accept =*args= can introduce hard to find bugs.
+
+     
+** DONE 19. Provide Optional Behavior with Keyword Arguments
+   CLOSED: [2019-06-26 Wed 17:01]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-26 Wed 17:01]
+   :LOGBOOK:
+   CLOCK: [2019-06-26 Wed 16:53]--[2019-06-26 Wed 17:01] =>  0:08
+   CLOCK: [2019-06-25 Tue 12:35]--[2019-06-25 Tue 12:41] =>  0:06
+   CLOCK: [2019-06-25 Tue 11:37]--[2019-06-25 Tue 11:42] =>  0:05
+   :END:
+  
+   All positional arguments to Python functions can also be passed by keyword.
+ 
+   #+begin_src python :session :results output :exports both
+     def remainder(number, divisor):
+         return number % divisor
+
+     print(remainder(20, 7) == 6)           # Using Position
+     print(remainder(20, divisor=7) == 6)
+     print(remainder(number=20, divisor=7) == 6)
+     print(remainder(divisor=7, number=20) == 6)
+
+     print(remainder(number=20, 7) == 6) # ERROR: Positional arguments must be specified before keywords
+
+     print(remainder(20, number=7) == 6) # ERROR: Each arg can only be specified once number = 20, number = 7
+   #+end_src
+
+   #+RESULTS:
+   : File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-9RVJJt/python-tdMtDL", line 9
+   :     print(remainder(number=20, 7) == 6) # ERROR: Positional arguments must be specified before keywords
+   :                               ^
+   : SyntaxError: positional argument follows keyword argument
+   : 
+   : 
+
+   *3 Benefits*
+
+   1. Makes function calls clearer to new readers.  =remainder(20, 7)= vs =remainder(number=20, divisor=7)=
+   2. Default values can be specified in the function definition. =def flow_rate(weight_diff, time_diff, period=1)=
+   3. Provides a powerful way to extend a function's parameters while remaining backwards compatable with existing callers.
+      - *But, DO ALWAYS provide optional arguments using the keyword names, not as positional arguments.*
+      
+   *Takeaways*
+   
+   - Function arguments can be specified by position or by keyword.
+   - Keywords make it clear what the purpose of each argument is when it would be confusing with only positional arguments.
+   - Keyword arguments with default values make it easy to add new behaviors to a function, especially when the function has exisitng callers.
+   - Optional keyword arguments should always be passed by keyword instead of by position.
+   
+
+** DONE 20. Use None and Docstrings to Specify Dynamic Default Arguments
+   CLOSED: [2019-06-27 Thu 16:32]
+   - State "DONE"       from "IN-PROGRESS" [2019-06-27 Thu 16:32]
+   :LOGBOOK:
+   CLOCK: [2019-06-27 Thu 15:55]--[2019-06-27 Thu 16:32] =>  0:37
+   CLOCK: [2019-06-27 Thu 15:53]--[2019-06-27 Thu 15:53] =>  0:00
+   :END:
+
+   Default values that are dynamic.
+
+   #+begin_src python :session :results output :exports both
+     from datetime import datetime
+     from time import sleep
+
+     def log(message, when=datetime.now()):
+         print('%s: %s' % (when, message))
+
+     log('Hi there!')
+     sleep(0.1)
+     log('Hi again!')
+   #+end_src
+
+   #+RESULTS:
+   : 2019-06-27 16:02:38.727596: Hi there!
+   : 2019-06-27 16:02:38.727596: Hi again!
+   : 
+   : 
+
+   But =datetime.now()= is evaluated when the function is defined, not when it is called.
+   
+   #+begin_src python :session :results output :exports both
+     from datetime import datetime
+
+     def log(message, when=None):
+         """Log a message with a timestamp.
+
+         Args:
+             message: Message to print.
+             when: datetime of when the message occurred.
+                 Defaults to the present time.
+         """
+
+         when = datetime.now() if when is None else when
+         print('%s: %s' % (when, message))
+
+     log('Hi there!')
+     log('Hi again!')
+   #+end_src
+
+   #+RESULTS:
+   : 2019-06-27 16:06:48.103252: Hi there!
+   : 2019-06-27 16:06:48.103289: Hi again!
+   : 
+   : 
+
+   Now they are different.
+
+   Using =None= for default argument values is important when the arguments are mutable.
+   
+    #+begin_src python :session :results output :exports both
+      import json
+
+      def decode(data, default={}):             # default is set to {} when the function is defined
+          try:
+              return json.loads(data)
+          except ValueError:
+              return default                    # returns the same mutable dict everytime
+
+
+      def decode_better(data, default=None):
+          """Load JSON data from a string.
+
+          Args:
+              data: JSON data to decode.
+              default: Value to return if decoding fails.
+                  Defaults to an empty dictionary.
+          """
+
+          if default is None:
+              default = {}
+          try:
+              return json.loads(data)
+          except ValueError:
+              return default
+
+
+      bad = decode('bad data')
+      bad['bad_key'] = 5
+      bad_too = decode('also bad')
+      bad_too['another_bad_key'] = 1
+
+      print('Mutable Dictionary as Default!')
+      print('Bad: ', bad)
+      print('Bad Too: ', bad_too)
+
+      bad_better = decode_better('bad data')
+      bad_better['bad_key'] = 5
+      bad_too_better = decode_better('also bad')
+      bad_too_better['another_bad_key'] = 1
+
+      print('\nNone as Default')
+      print('Bad Better: ', bad_better)
+      print('Bad Too Better: ', bad_too_better)
+   #+end_src
+
+   #+RESULTS:
+   : Mutable Dictionary as Default!
+   : Bad:  {'bad_key': 5, 'another_bad_key': 1}
+   : Bad Too:  {'bad_key': 5, 'another_bad_key': 1}
+   : 
+   : None as Default
+   : Bad Better:  {'bad_key': 5}
+   : Bad Too Better:  {'another_bad_key': 1}
+   : 
+   : 
+
+   The values produced by =decode()= are the *same* because they are both the same instance of the =default= dictionary because it is defined during the module load. 
+   
+   The values produced by =decode_better()= are different because the default is defined at *runtime* when the function is called. 
+  
+   *Takeaways*
+   
+   - Default arguments are only evaluated once: during the function definition at module load time. This can cause add behaviors for dynamic values. (=[]= or ={}=)
+   - Use =None= as the default value for keyword args that have a dynamic value. *Document the actual default behavior in the function's docstring.
+   
+
 ** TODO 21. Enforce Clarity with Keyword-Only Arguments
 
 * Classes and Inheritance
@@ -1064,10 +1346,10 @@
 * Time
 
 #+BEGIN: clocktable :scope file :maxlevel 2
-#+CAPTION: Clock summary at [2019-06-21 Fri 11:25]
+#+CAPTION: Clock summary at [2019-06-27 Thu 16:32]
 | Headline                                     |   Time |      |
 |----------------------------------------------+--------+------|
-| *Total time*                                 | *3:40* |      |
+| *Total time*                                 | *5:04* |      |
 |----------------------------------------------+--------+------|
 | Pythonic Thinking                            |   1:27 |      |
 | \_  8. Avoid More Than Two Expressions in... |        | 0:07 |
@@ -1076,9 +1358,12 @@
 | \_  11. Use =zip= to Process Iterators in... |        | 0:14 |
 | \_  12. Avoid =else= Blocks After =for=...   |        | 0:10 |
 | \_  13. Take Advantage of Each Block in...   |        | 0:20 |
-| Functions                                    |   2:13 |      |
+| Functions                                    |   3:37 |      |
 | \_  14. Prefer Exceptions to Returning...    |        | 0:18 |
 | \_  15. Know How Closures Interact with...   |        | 0:24 |
 | \_  16. Consider Generators Instead of...    |        | 0:26 |
 | \_  17. Be Defensive When Iterating Over...  |        | 1:05 |
+| \_  18. Reduce Visual Noise with Variable... |        | 0:28 |
+| \_  19. Provide Optional Behavior with...    |        | 0:19 |
+| \_  20. Use None and Docstrings to...        |        | 0:37 |
 #+END:
