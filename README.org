@@ -18,11 +18,11 @@
 
 * Technologies
   
-** [[file:technologies/elastic_search/][Elastic Search]]
+  - [[file:technologies/elastic_search/][Elastic Search]]
    
 * Cloud Architecture
 
-** [[file:infrastructure/aws/][AWS]]
+  - [[file:infrastructure/aws/][AWS]]
 
 * Emacs & Elisp
   
