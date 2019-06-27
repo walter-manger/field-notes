@@ -5,18 +5,13 @@
 
 * λ Programming Language Learning
 
-** [[file:programming/elixir/][Elixir]]
-   
-** [[file:programming/go/][Golang]]
-   
-** [[file:programming/haskell/][Haskell]]
+  - [[file:programming/elixir/][Elixir]]
+  - [[file:programming/go/][Golang]]
+  - [[file:programming/haskell/][Haskell]]
+  - [[file:programming/javascript/][Javascript]]
+  - [[file:programming/python/][Python]]
+  - [[file:programming/lisp/][Lisp]]
 
-** [[file:programming/javascript/][Javascript]]
-   
-** [[file:programming/python/][Python]]
-
-** [[file:programming/lisp/][Lisp]]
-   
 * [[file:programming_paradigms/][Programming Paradigms]]
   
 * Design Patterns
