@@ -9,7 +9,5 @@
 
  
 ** TODO Reference Materials
-  
-*** TODO The Joy Of Elixir
    
-    https://joyofelixir.com/toc.html
+   - The Joy Of Elixir https://joyofelixir.com/toc.html

@@ -6,13 +6,9 @@
  
 ** TODO Reference Materials
   
-*** TODO [[file:59_Ways.org][Effective Python]] 
-   
-*** TODO Think Complexity
-   
-*** TODO Music for Geeks and Nerds
-    https://pedrokroger.net/mfgan/
- 
-*** TODO [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
+   - [[file:59_Ways.org][Effective Python]] 
+   - Think Complexity
+   - Music for Geeks and Nerds https://pedrokroger.net/mfgan/
+   - [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
 
  

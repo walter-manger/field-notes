@@ -30,12 +30,10 @@
 *** TODO Setup Common Lisp
  
 ** TODO Reference Materials
- 
-*** TODO Let Over Lambda
-    https://letoverlambda.com/index.cl/toc
    
-*** TODO Practical Common Lisp
-    http://www.gigamonkeys.com/book/
-
-*** TODO MAYBE SICP
-    - SICP Exercises: https://github.com/zv/SICP-guile
+   - Let Over Lambda
+     - https://letoverlambda.com/index.cl/toc
+   - Practical Common Lisp
+     - http://www.gigamonkeys.com/book/
+   - MAYBE SICP
+     - SICP Exercises: https://github.com/zv/SICP-guile

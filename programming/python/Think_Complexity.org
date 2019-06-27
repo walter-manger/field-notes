@@ -4,30 +4,30 @@
 
 Reading: http://www.greenteapress.com/complexity/html/index.html
 
-* TODO Chapter 1 - Complexity Science
+** TODO Chapter 1 - Complexity Science
   
-* TODO Chapter 2 - Graphs
+** TODO Chapter 2 - Graphs
 
-* TODO Chapter 3 - Analysis of Algorithms
+** TODO Chapter 3 - Analysis of Algorithms
 
-* TODO Chapter 4 - Small World Problems
+** TODO Chapter 4 - Small World Problems
 
-* TODO Chapter 5 - Scale-free Networks
+** TODO Chapter 5 - Scale-free Networks
 
-* TODO Chapter 6 - Cellular Automata
+** TODO Chapter 6 - Cellular Automata
 
-* TODO Chapter 7 - Game of Life
+** TODO Chapter 7 - Game of Life
 
-* TODO Chapter 8 - Fractals
+** TODO Chapter 8 - Fractals
 
-* TODO Chapter 9 - Self-organized Criticality 
+** TODO Chapter 9 - Self-organized Criticality 
 
-* TODO Chapter 10 - Agent-based Models
+** TODO Chapter 10 - Agent-based Models
 
-* TODO Chapter 11 - Case study: Sugarscape
+** TODO Chapter 11 - Case study: Sugarscape
 
-* TODO Chapter 12 - Case study: Ant trails
+** TODO Chapter 12 - Case study: Ant trails
 
-* TODO Chapter 13 - Case study: Directed graphs and knots
+** TODO Chapter 13 - Case study: Directed graphs and knots
 
-* TODO Chapter 14 - Case study: The Volunteer's Dilemma
+** TODO Chapter 14 - Case study: The Volunteer's Dilemma

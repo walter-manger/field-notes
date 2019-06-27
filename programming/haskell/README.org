@@ -58,15 +58,9 @@
  
 ** TODO Reference Materials
 
-*** TODO Functional Pearls
-   
-    https://wiki.haskell.org/Research_papers/Functional_pearls
- 
-*** TODO [[file:learn_you_a_haskell/Learn_You_A_Haskell.org][Learn You A Haskell for Great Good]]
-   
-*** TODO 99 Haskell Problems
-   
-*** TODO Real World Haskell
-     
-    Another pretty good resource for learning real-world programming with Haskell.
-    http://book.realworldhaskell.org/read/
+   - Functional Pearls
+     - https://wiki.haskell.org/Research_papers/Functional_pearls
+   - [[file:learn_you_a_haskell/Learn_You_A_Haskell.org][Learn You A Haskell for Great Good]]
+   - 99 Haskell Problems
+   - Real World Haskell
+     - Another pretty good resource for learning real-world programming with Haskell. http://book.realworldhaskell.org/read/
