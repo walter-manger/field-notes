@@ -3,27 +3,27 @@
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
 
-* λ Programming Language Learning
+** λ Programming Language Learning
 
-  - [[file:programming/elixir/][Elixir]]
-  - [[file:programming/go/][Golang]]
-  - [[file:programming/haskell/][Haskell]]
-  - [[file:programming/javascript/][Javascript]]
-  - [[file:programming/python/][Python]]
-  - [[file:programming/lisp/][Lisp]]
+   - [[file:programming/elixir/][Elixir]]
+   - [[file:programming/go/][Golang]]
+   - [[file:programming/haskell/][Haskell]]
+   - [[file:programming/javascript/][Javascript]]
+   - [[file:programming/python/][Python]]
+   - [[file:programming/lisp/][Lisp]]
 
-* [[file:programming_paradigms/][Programming Paradigms]]
+** [[file:programming_paradigms/][Programming Paradigms]]
   
-* Design Patterns
+** Design Patterns
 
-* Technologies
+** Technologies
   
-  - [[file:technologies/elastic_search/][Elastic Search]]
+   - [[file:technologies/elastic_search/][Elastic Search]]
    
-* Cloud Architecture
+** Cloud Architecture
 
-  - [[file:infrastructure/aws/][AWS]]
+   - [[file:infrastructure/aws/][AWS]]
 
-* Emacs & Elisp
+** Emacs & Elisp
   
 
