@@ -1,5 +1,5 @@
 #+TITLE: 59 Ways To Improve Python
-#+STARTUP: logdone
+#+STARTUP: logdone inlineimages
 #+OPTIONS: toc:nil num:nil
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
@@ -1466,12 +1466,899 @@
 
 ** Classes and Inheritance
 
-*** TODO 22. Prefer Helper Classes Over Bookkeeping with Dictionaries and Tuples
-*** TODO 23. Accept Functions for Simple Interfaces Instead of Classes
-*** TODO 24. User =@classmethod= Polymorphism to Construct Objects Generically
-*** TODO 25. Initialize Parent Classes with =super=
-*** TODO 26. Use Multiple Inheritance Only for Mix-in Utility Classes
-*** TODO 27. Prefer Public Attributes Over Private Ones
+*** DONE 22. Prefer Helper Classes Over Bookkeeping with Dictionaries and Tuples
+    CLOSED: [2019-07-01 Mon 16:44]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-01 Mon 16:44]
+    :LOGBOOK:
+    CLOCK: [2019-07-01 Mon 16:09]--[2019-07-01 Mon 16:44] =>  0:35
+    :END:
+    
+    Don't go too far with builtin data structures:
+
+    #+begin_src python :session
+      class SimpleGradebook(object):
+          def __init__(self):
+              self._grades = {}
+
+          def add_student(self, name):
+              self._grades[name] = []
+
+          def report_grade(self, name, score):
+              self._grades[name].append(score)
+
+          def average_grade(self, name):
+              grades = self._grades[name]
+              return sum(grades) / len(grades)
+
+      # Add some weight and subjects, it gets pretty complex
+
+      class WeightedGradebook(object):
+          def __init__(self):
+              self._grades = {}
+
+          def add_student(self, name):
+              self._grades[name] = []
+
+          def report_grade(self, name, subject, score, weight):
+              by_subject = self._grades[name]
+              grade_list = by_subject.setdefault(subject, [])
+              grade_list.append((score, weight))
+
+          def average_grade(self, name):
+              by_subject = self._grades[name]
+              score_sum, score_count = 0, 0
+              for subject, scores in by_subject.values():
+                  subject_avg, total_weight = 0, 0
+                  for score, weight in scores:
+                      # ...
+                      pass
+              return score_sum / score_count
+
+
+      book = WeightedGradebook()
+      book.add_student('Isaac Newton')
+      book.report_grade('Isaac Newton', 'Math', 80, 0.10)
+    #+end_src
+
+    A lot could go wrong with this implementation, let's refactor to classes.
+    
+    #+begin_src python :session :results output :exports both
+      class Grade(object):
+          def __init__(self, score, weight):
+              self.score = score
+              self.weight = weight
+
+
+      class Subject(object):
+          def __init__(self):
+              self._grades = []
+
+          def report_grade(self, score, weight):
+              self._grades.append(Grade(score, weight))
+
+          def average_grade(self):
+              total, total_weight = 0, 0
+              for grade in self._grades:
+                  total += grade.score * grade.weight
+                  total_weight += grade.weight
+              return total / total_weight
+
+      class Student(object):
+          def __init__(self):
+              self._subjects = {}
+
+          def subject(self, name):
+              if name not in self._subjects:
+                  self._subjects[name] = Subject()
+              return self._subjects[name]
+
+          def average_grade(self):
+              total, count = 0, 0
+              for subject in self._subjects.values():
+                  total += subject.average_grade()
+                  count += 1
+              return total / count
+
+      class Gradebook(object):
+          def __init__(self):
+              self._students = {}
+
+          def student(self, name):
+              if name not in self._students:
+                  self._students[name] = Student()
+              return self._students[name]
+
+      book = Gradebook()
+      albert = book.student('Albert Einstein')
+      math = albert.subject('Math')
+      math.report_grade(80, 0.10)
+
+      print(albert.average_grade())
+    #+end_src
+
+    #+RESULTS:
+    : 80.0
+    : 
+    : 
+
+    *Takeaways*
+
+    - Avoid nested dictionaries or long tuples.
+    - Use =namedtuple= for lightweight, immutable data containers before you need the flexibility of a full class.
+    - Move your bookkeeping code to use multiple helper classes when your internal state dictionaries get complicated.
+
+      
+*** DONE 23. Accept Functions for Simple Interfaces Instead of Classes
+    CLOSED: [2019-07-02 Tue 11:32]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-02 Tue 11:32]
+    :LOGBOOK:
+    CLOCK: [2019-07-02 Tue 11:05]--[2019-07-02 Tue 11:32] =>  0:27
+    :END:
+
+    Use first-class functions to extend code. (stateless)
+
+    #+begin_src python :session :results output :exports both
+      from collections import defaultdict
+
+      def log_missing():
+          print('Key added')
+          return 0
+
+      current = {'green': 12, 'blue': 3}
+      increments = [
+          ('red', 5),
+          ('blue', 17),
+          ('orange', 9)
+      ]
+      result = defaultdict(log_missing, current)
+      print('Before: ', dict(result))
+      for key, amount in increments:
+          result[key] += amount
+      print('After: ', dict(result))
+    #+end_src   
+
+    #+RESULTS:
+    : Before:  {'green': 12, 'blue': 3}
+    : Key added
+    : Key added
+    : After:  {'green': 12, 'blue': 20, 'red': 5, 'orange': 9}
+    : 
+    : 
+
+
+    If your function needs some state, use a _closure_.
+    
+    #+begin_src python :session :results output :exports both
+      from collections import defaultdict
+
+      def increment_with_report(current, increments):
+
+          added_count = 0
+
+          def missing():
+              nonlocal added_count
+              added_count += 1
+              return 0
+
+          result = defaultdict(missing, current)
+          for key, amount in increments:
+              result[key] += amount
+
+          return result, added_count
+
+      current = {'green': 12, 'blue': 3}
+      increments = [
+          ('red', 5),
+          ('blue', 17),
+          ('orange', 9)
+      ]
+      result, count = increment_with_report(current, increments)
+      print(count == 2)
+    #+end_src   
+
+    #+RESULTS:
+    : True
+    : 
+    : 
+
+    But using a closure is harder to read than the stateless function. Let's use a small class that encapsulates the state.
+    
+    #+begin_src python :session :results output :exports both
+      from collections import defaultdict
+
+      class CountMissing(object):
+          def __init__(self):
+              self.added = 0
+
+          def missing(self):
+              self.added += 1
+              return 0
+
+      current = {'green': 12, 'blue': 3}
+      increments = [
+          ('red', 5),
+          ('blue', 17),
+          ('orange', 9)
+      ]
+
+      counter = CountMissing()
+      result = defaultdict(counter.missing, current)
+      for key, amount in increments:
+          result[key] += amount
+
+      print(counter.added == 2)
+    #+end_src   
+
+    #+RESULTS:
+    : True
+    : 
+    : 
+
+
+    This is clearer than the closure function, but it's not really obvious what to do with the class. Let's modify for better clarity.
+    
+    #+begin_src python :session :results output :exports both
+      from collections import defaultdict
+
+      class BetterCountMissing(object):
+          def __init__(self):
+              self.added = 0
+
+          def __call__(self):
+              self.added += 1
+              return 0
+
+      current = {'green': 12, 'blue': 3}
+      increments = [
+          ('red', 5),
+          ('blue', 17),
+          ('orange', 9)
+      ]
+
+      counter = BetterCountMissing()
+      result = defaultdict(counter, current)  # Will invoke __call__() on the object passed in
+      for key, amount in increments:
+          result[key] += amount
+
+      print(counter.added == 2)
+    #+end_src   
+
+    #+RESULTS:
+    : True
+    : 
+    : 
+
+
+    Much clearer than passing the method reference in the =CountMissing= class.
+
+    *Takeaways*
+
+    - Use functions instead of classes for interfaces between components in Python.
+    - References to functions and methods in Python are first class (they can be used in expressions like other types).
+    - =__call__= allows classes to be called like plain Python functions.
+    - When you need a function to maintain state, consider defining a class that provides the =__call__= method instead of defining a stateful closure.
+
+
+*** DONE 24. Use =@classmethod= Polymorphism to Construct Objects Generically
+    CLOSED: [2019-07-09 Tue 14:47]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-09 Tue 14:47]
+    :LOGBOOK:
+    CLOCK: [2019-07-03 Wed 10:22]--[2019-07-03 Wed 10:53] =>  0:01
+    :END:
+
+    Create a MapReduce implementation with a common class to represent the input data.
+    
+    #+begin_src python :session :results output :exports both
+      import threading
+      import os
+
+
+      # Abstract
+      class InputData(object):
+          def read(self):
+              raise NotImplementedError
+
+      # Concrete: Must implement read()
+      class PathInputData(InputData):
+          def __init__(self, path):
+              super().__init__()
+              self.path = path
+
+          def read(self):
+              return open(self.path).read()
+
+      # Abstract
+      class Worker(object):
+          def __init__(self, input_data):
+              self.input_data = input_data
+              self.result = None
+
+          def map(self):
+              raise NotImplementedError
+
+          def reduce(self):
+              raise NotImplementedError
+
+      # Concrete: Must implement map() and reduce()
+      class LineCountWorker(Worker):
+          def map(self):
+              data = self.input_data.read()
+              self.result = data.count('\n')
+
+          def reduce(self, other):
+              self.result += other.result
+
+
+      # But, what's responsible for building these and orchestrating the MapReduce?
+
+      def generate_inputs(data_dir):
+          for name in os.listdir(data_dir):
+              yield PathInputData(os.path.join(data_dir, name))  # Not generic, relies on PathInputData
+
+      def create_workers(input_list):
+          workers = []
+          for input_data in input_list:
+              workers.append(LineCountWorker(input_data)) # Not generic, relies on LineCountWorker
+          return workers
+
+      def execute(workers):
+          threads = [Thread(target=w.map) for w in workers]
+          for thread in threads: thread.start()
+          for thread in threads: thread.join()
+
+          first, rest = workers[0], workers[1:]
+          for worker in rest:
+              first.reduce(worker)
+          return first.result
+
+      # But, this is not generic, ie it can only work with PathInputData and LineCountWorker
+      def mapreduce(data_dir):
+          inputs = generate_inputs(data_dir)
+          workers = create_workers(inputs)
+          return execute(workers)
+
+      from tempfile input TemporaryDirectory
+
+      def write_test_fields(tmpdir):
+          pass
+
+      with TemporaryDirectory() as tmpdir:
+          write_test_files(tmpdir)
+          result = mapreduce(tmpdir)
+    #+end_src   
+
+    We know that this would work OK for =PathInputData= and =LineCountWorker=, but if we wanted to support another subclass of =InputData= or =Worker=, we'd have to write new functions (=mapreduce=, =create_workers=, =generate_inputs=) to support them. 
+    
+    How would we support constructing objects generically? We don't have constructor polymorphism in Python.
+
+    Enter =@classmethod= polymorphism.
+    
+    #+begin_src python :session :results output :exports both
+      class GenericInputData(object):
+          def read(self):
+              raise NotImplementedError
+
+          @classmethod
+          def generate_inputs(cls, config):
+              raise NotImplementedError
+
+      class PathInputData(GenericInputData):
+          def __init__(self, path):
+              super().__init__()
+              self.path = path
+
+          def read(self):
+              return open(self.path).read()
+
+          @classmethod
+          def generate_inputs(cls, config):
+              data_dir = config['data_dir']
+              for name in os.listdir(data_dir):
+                  yield cls(os.path.join(data_dir, name))
+
+      class GenericWorker(object):
+          def __init__(self, input_data):
+              self.input_data = input_data
+              self.result = None
+
+          def map(self):
+              raise NotImplementedError
+
+          def reduce(self, other):
+              raise NotImplementedError
+
+          @classmethod
+          def create_workers(cls, input_class, config):
+              workers = []
+              for input_data in input_class.generate_inputs(config): # class method polymorphism
+                  workers.append(cls(input_data))
+              return workers
+
+      # Concrete: Must implement map() and reduce()
+      class LineCountWorker(GenericWorker):
+          def map(self):
+              data = self.input_data.read()
+              self.result = data.count('\n')
+
+          def reduce(self, other):
+              self.result += other.result
+
+      def mapreduce(worker_class, input_class, config):
+          workers = worker_class.create_workers(input_class, config)
+          return execute(workers)
+
+      from tempfile input TemporaryDirectory
+
+      def write_test_fields(tmpdir):
+          pass
+
+      with TemporaryDirectory() as tmpdir:
+          write_test_files(tmpdir)
+          config = {'data_dir': tempdir}
+          result = mapreduce(LineCountWorker, PahtInputData, config)
+    #+end_src   
+    
+    Less code and way more flexible.
+
+    *Takeaways*
+    
+    - Python only supports a single constructor per class (=__init__=).
+    - Use =@classmethod= to define alternative constructors for your classes.
+    - use =class= method polymorphism to provide generic ways to build and connect concrete subclasses.
+
+
+*** DONE 25. Initialize Parent Classes with =super=
+    CLOSED: [2019-07-10 Wed 11:17]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-10 Wed 11:17]
+    :LOGBOOK:
+    CLOCK: [2019-07-10 Wed 10:39]--[2019-07-10 Wed 11:17] =>  0:38
+    :END:
+    
+    The old way of initializing a parent class
+
+    #+begin_src python :session :results output :exports both
+      class Base(object):
+          def __init__(self, value):
+              self.value = value
+
+      class Child(Base):
+          def __init__(self):
+              Base.__init__(self, 5)
+
+
+      print(Child().value)
+    #+end_src   
+
+    #+RESULTS:
+    : 5
+
+    This works ok for simple heirarchies, but breaks down in other cases.
+
+    *Problem 1: =__init__= call order isn't specified across all subclasses.*
+    
+    #+begin_src python :session :results output :exports both
+      class Base(object):
+          def __init__(self, value):
+              self.value = value
+
+      class TimesTwo(object):
+          def __init__(self):
+              self.value *= 2
+
+      class PlusFive(object):
+          def __init__(self):
+              self.value += 5
+
+      class OneWay(Base, TimesTwo, PlusFive):
+          def __init__(self, value):
+              Base.__init__(self, value)
+              TimesTwo.__init__(self)
+              PlusFive.__init__(self)
+      
+      class AnotherWay(Base, PlusFive, TimesTwo):
+          def __init__(self, value):
+              Base.__init__(self, value)
+              TimesTwo.__init__(self)
+              PlusFive.__init__(self)
+
+      class LastWay(Base, TimesTwo, PlusFive):
+          def __init__(self, value):
+              Base.__init__(self, value)
+              PlusFive.__init__(self)
+              TimesTwo.__init__(self) # <--- depends on the ordering of the __init__ calls.
+
+      print(OneWay(5).value)
+      print(AnotherWay(5).value)
+      print(LastWay(5).value)
+    #+end_src   
+
+    #+RESULTS:
+    : 15
+    : 15
+    : 20
+
+    Both =OneWay= and =AnotherWay= produce the same value even though the ordering of inheritance is different.
+    
+    *Problem 2: Diamond inheritance causes the base of a base to be called multiple times.*
+    
+    #+begin_src python :session :results output :exports both
+      class Base(object):
+          def __init__(self, value):
+              self.value = value
+
+      class TimesFive(Base):
+          def __init__(self, value):
+              Base.__init__(self, value)
+              self.value *= 5
+
+      class PlusTwo(Base):
+          def __init__(self, value):
+              Base.__init__(self, value)
+              self.value += 2
+
+      class ThisWay(TimesFive, PlusTwo):
+          def __init__(self, value):
+              TimesFive.__init__(self, value)
+              PlusTwo.__init__(self, value)  # <- resets Base.value = 5
+
+      print('Should be (5 * 5) + 2 = 27, but it is: ', ThisWay(5).value)
+    #+end_src
+
+    #+RESULTS:
+    : Should be (5 * 5) + 2 = 27, but it is:  7
+
+    Let's use =super()= with diamond inheritance, since it will use method resolution order (MRO) to deterimine which classes are initialized in which order. Base classes are only initialized _once_.
+    
+    #+begin_src python :session :results output :exports both
+      from pprint import pprint
+
+      class Base(object):
+          def __init__(self, value):
+              self.value = value
+
+      class TimesFiveCorrect(Base):
+          def __init__(self, value):
+              super(__class__, self).__init__(value) # Explicit
+              self.value *= 5
+
+      class PlusTwoCorrect(Base):
+          def __init__(self, value):
+              super().__init__(value)  # Implicit
+              self.value += 2
+
+      class GoodWay(TimesFiveCorrect, PlusTwoCorrect):
+          def __init__(self, value):
+              super(GoodWay, self).__init__(value)
+
+      print('method resolution order (MRO)')
+      pprint(GoodWay.mro())
+      print('classes are initialized bottom up. Base (5), PlusTwoCorrect (5 + 2), TimesFiveCorrect (5 * (5 + 2))')
+      print('Should be 5 * (5 + 2) = 35, which it is: ', GoodWay(5).value)
+    #+end_src
+
+    #+RESULTS:
+    : method resolution order (MRO)
+    : [<class '__main__.GoodWay'>,
+    :  <class '__main__.TimesFiveCorrect'>,
+    :  <class '__main__.PlusTwoCorrect'>,
+    :  <class '__main__.Base'>,
+    :  <class 'object'>]
+    : classes are initialized bottom up. Base (5), PlusTwoCorrect (5 + 2), TimesFiveCorrect (5 * (5 + 2))
+    : Should be 5 * (5 + 2) = 35, which it is:  35
+
+
+    *Takeaways*
+    - Python's standard method resolution order solves the problems of superclass initialization order and diamond inheritance.
+    - *Always* use the =super= built-in function to initialize parent classes.
+
+
+*** DONE 26. Use Multiple Inheritance Only for Mix-in Utility Classes
+    CLOSED: [2019-07-11 Thu 15:51]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-11 Thu 15:51]
+    :LOGBOOK:
+    CLOCK: [2019-07-11 Thu 15:16]--[2019-07-11 Thu 15:51] =>  0:35
+    :END:
+
+    *Write a _mix-in_ instead of a full-blown class*
+    
+    > A mix-in is a small class that only defines a set of additional methods that a class should provide.
+    
+    #+begin_src python :session :results output :exports both
+      from pprint import pprint
+      import json
+
+      class ToDictMixin(object):
+          def to_dict(self):
+              return self._traverse_dict(self.__dict__)
+
+          def _traverse_dict(self, instance_dict):
+              output = {}
+              for key, value in instance_dict.items():
+                  output[key] = self._traverse(key, value)
+              return output
+
+          def _traverse(self, key, value):
+              if isinstance(value, ToDictMixin):
+                  return value.to_dict()
+              elif isinstance(value, dict):
+                  return self._traverse_dict(value)
+              elif isinstance(value, list):
+                  return [self._traverse(key, i) for i in value]
+              elif hasattr(value, '__dict__'):
+                  return self._traverse_dict(value.__dict__)
+              else:
+                  return value
+
+      class BinaryTree(ToDictMixin):
+          def __init__(self, value, left=None, right=None):
+              self.value = value
+              self.left = left
+              self.right = right
+
+
+      tree = BinaryTree(10,
+                        left=BinaryTree(7, right=BinaryTree(9)),
+                        right=BinaryTree(13, left=BinaryTree(11)))
+
+      pprint(tree.to_dict())
+
+      print('What about subclasses?')
+
+
+      class BinaryTreeWithParent(BinaryTree):
+          def __init__(self, value, left=None, right=None, parent=None):
+              super().__init__(value, left=left, right=right)
+              self.parent = parent
+
+          def _traverse(self, key, value):
+              if (isinstance(value, BinaryTreeWithParent) and key == 'parent'):
+                  return value.value # Prevent Infinite Cycles
+              else:
+                  return super()._traverse(key, value)
+
+
+
+      root = BinaryTreeWithParent(10)
+      root.left = BinaryTreeWithParent(7, parent=root)
+      root.left.right = BinaryTreeWithParent(9, parent=root.left)
+
+      pprint(root.to_dict())
+
+      class JsonMixin(object):
+          @classmethod
+          def from_json(cls, data):
+              kwargs = json.loads(data)
+              return cls(**kwargs)
+
+          def to_json(self):
+              return json.dumps(self.to_dict())  # Whoa, using a method from another mixin?
+
+      class DatacenterRack(ToDictMixin, JsonMixin):
+          def __init__(self, switch=None, machines=None):
+              self.switch = Switch(**switch)
+              self.machines = [Machine(**kwargs) for kwargs in machines]
+
+      class Switch(ToDictMixin, JsonMixin):
+          def __init__(self, ports=None, speed=None):
+              self.ports = ports
+              self.speed = speed
+
+
+      class Machine(ToDictMixin, JsonMixin):
+          def __init__(self, cores=None, ram=None, disk=None):
+              self.cores = cores
+              self.ram = ram
+              self.disk = disk
+
+
+      serialized = """{
+      "switch": {"ports": 5, "speed": 1e9},
+      "machines": [
+      {"cores": 8, "ram": 32e9, "disk": 5e12},
+      {"cores": 4, "ram": 16e9, "disk": 1e12},
+      {"cores": 2, "ram": 4e9, "disk": 500e12}
+      ]
+      }
+      """
+
+      deserialized = DatacenterRack.from_json(serialized)
+      roundtrip = deserialized.to_json()
+
+      pprint(json.loads(serialized))
+
+      assert json.loads(serialized) == json.loads(roundtrip)
+    #+end_src   
+
+    #+RESULTS:
+    #+begin_example
+    {'left': {'left': None,
+              'right': {'left': None, 'right': None, 'value': 9},
+              'value': 7},
+     'right': {'left': {'left': None, 'right': None, 'value': 11},
+               'right': None,
+               'value': 13},
+     'value': 10}
+    What about subclasses?
+    {'left': {'left': None,
+              'parent': 10,
+              'right': {'left': None, 'parent': 7, 'right': None, 'value': 9},
+              'value': 7},
+     'parent': None,
+     'right': None,
+     'value': 10}
+    {'machines': [{'cores': 8, 'disk': 5000000000000.0, 'ram': 32000000000.0},
+                  {'cores': 4, 'disk': 1000000000000.0, 'ram': 16000000000.0},
+                  {'cores': 2, 'disk': 500000000000000.0, 'ram': 4000000000.0}],
+     'switch': {'ports': 5, 'speed': 1000000000.0}}
+    #+end_example
+
+    
+    *Takeaways*
+    
+    - Avoid using multiple inheritance if mix-in classes can achieve the same outcome.
+    - Use pluggable behaviors at the instance level to proveid per-class customization when mix-in classes may require it.
+    - Compose mix-ins to create complex functionality from simple behaviors.
+
+
+*** DONE 27. Prefer Public Attributes Over Private Ones
+    CLOSED: [2019-07-12 Fri 15:42]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-12 Fri 15:42]
+    :LOGBOOK:
+    CLOCK: [2019-07-12 Fri 15:00]--[2019-07-12 Fri 15:42] =>  0:42
+    :END:
+    
+    There are only two types of attribute visibility for a class's attributes: /public/ and /private/.
+
+    #+begin_src python :session :results output :exports both
+      class MyObject(object):
+          def __init__(self):
+              self.public_field = 5
+              self.__private_field = 10
+
+          def get_private_field(self):
+              return self.__private_field
+
+      assert MyObject().public_field == 5
+      assert MyObject().get_private_field() == 10
+
+      # MyObject().__private_field 
+      # AttributeError: 'MyObject' object has no attribute '__private_field'
+    #+end_src
+
+    #+RESULTS:
+   
+    Class methods have access to private fields because they are declared in the class scope.
+ 
+    #+begin_src python :session :results output :exports both
+      class MyOtherObject(object):
+          def __init__(self):
+              self.__private_field = 71
+
+          @classmethod
+          def get_private_field_of_instance(cls, instance):
+              return instance.__private_field
+
+      assert MyOtherObject.get_private_field_of_instance(MyOtherObject()) == 71
+    #+end_src
+
+    #+RESULTS:
+
+    Subclasses CANNOT access its parent's private fields.
+
+    #+begin_src python :session :results output :exports both
+      class MyParentObject(object):
+          def __init__(self):
+              self.__private_field = 71
+
+
+      class MyChildObject(MyParentObject):
+          def get_private_field(self):
+              return self.__private_field
+
+      # assert MyChildObject().get_private_field() == 71
+      # AttributeError: 'MyChildObject' object has no attribute '_MyChildObject__private_field'
+
+      print('but now we know the REAL implementation of the private field')
+
+      obj = MyChildObject()
+      print(obj._MyParentObject__private_field)
+      print(obj.__dict__)
+      obj._MyParentObject__private_field = 42
+      print('oh man, I just changed a private field to', obj._MyParentObject__private_field)
+    #+end_src
+
+    #+RESULTS:
+    : but now we know the REAL implementation of the private field
+    : 71
+    : {'_MyParentObject__private_field': 71}
+    : oh man, I just changed a private field to 42
+
+    Private field disaster.
+
+    #+begin_src python :session :results output :exports both
+      class MyClass(object):
+          def __init__(self, value):
+              self.__value = value
+
+          def get_value(self):
+              return str(self.__value)
+
+      MyClass(5).get_value() == '5'
+
+      print('What about subclassing?')
+
+      class MyIntegerSubclass(MyClass):
+          def get_value(self):
+              return int(self._MyClass__value)
+
+      assert MyIntegerSubclass(5).get_value() == 5
+    #+end_src
+
+    #+RESULTS:
+    : What about subclassing?
+
+
+    Looking good so far, but what if the hierarchy changes?
+    
+    #+begin_src python :session :results output :exports both
+      class MyBaseClass(object):
+          def __init__(self, value):
+              self.__value = value
+
+      class MyClass(MyBaseClass):
+          def get_value(self):
+              return str(self.__value)
+
+      MyClass(5).get_value() == '5'
+
+      print('What about subclassing?')
+
+      class MyIntegerSubclass(MyClass):
+          def get_value(self):
+              return int(self._MyClass__value)
+
+      assert MyIntegerSubclass(5).get_value() == 5
+    #+end_src
+
+    #+RESULTS:
+    : Traceback (most recent call last):
+    :   File "<stdin>", line 1, in <module>
+    :   File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-5sNdnI/python-P6ex5W", line 10, in <module>
+    :     MyClass(5).get_value() == '5'
+    :   File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-5sNdnI/python-P6ex5W", line 8, in get_value
+    :     return str(self.__value)
+    : AttributeError: 'MyClass' object has no attribute '_MyClass__value'
+
+
+    Only consider using private attributes when you worried about naming conflicts.
+
+    #+begin_src python :session :results output :exports both
+      class ApiClass(object):
+          def __init__(self):
+              self.__value = 5
+
+          def get(self):
+              return self.__value
+
+      class Child(ApiClass):
+          def __init__(self):
+              super().__init__()
+              self._value = 'hello'
+
+      c = Child()
+      print(c.get(), 'and', c._value, 'are different')
+    #+end_src
+
+    #+RESULTS:
+    : 5 and hello are different
+
+    *Takeaways*
+    - Private attributes aren't rigorously enforced by the Python compiler.
+    - Plan from the beginning to allow subclasses to do more with your internal APIs and attributes instead of locking then out by default.
+    - Use documentation of protected fields to guide subclasses instead of trying to force access control with private attributes.
+    - Only consider private attributes if worried about naming conflicts. (not a very strong argument)
+
+      
 *** TODO 28. Inherit from =collections.abc= for Custom Container Types
 
 ** Metaclasses and Attributes
@@ -1487,10 +2374,10 @@
 ** Time
 
  #+BEGIN: clocktable :scope file :maxlevel 3
- #+CAPTION: Clock summary at [2019-06-28 Fri 14:44]
+ #+CAPTION: Clock summary at [2019-07-12 Fri 15:42]
  | Headline                                       | Time   |      |      |
  |------------------------------------------------+--------+------+------|
- | *Total time*                                   | *5:28* |      |      |
+ | *Total time*                                   | *8:56* |      |      |
  |------------------------------------------------+--------+------+------|
  | \_  Pythonic Thinking                          |        | 1:27 |      |
  | \_    8. Avoid More Than Two Expressions in... |        |      | 0:07 |
@@ -1508,4 +2395,12 @@
  | \_    19. Provide Optional Behavior with...    |        |      | 0:19 |
  | \_    20. Use None and Docstrings to...        |        |      | 0:37 |
  | \_    21. Enforce Clarity with Keyword-Only... |        |      | 0:24 |
+ | \_  Classes and Inheritance                    |        | 3:28 |      |
+ | \_    22. Prefer Helper Classes Over...        |        |      | 0:35 |
+ | \_    23. Accept Functions for Simple...       |        |      | 0:27 |
+ | \_    24. Use =@classmethod= Polymorphism...   |        |      | 0:31 |
+ | \_    25. Initialize Parent Classes with...    |        |      | 0:38 |
+ | \_    26. Use Multiple Inheritance Only for... |        |      | 0:35 |
+ | \_    27. Prefer Public Attributes Over...     |        |      | 0:42 |
  #+END:
+ 
