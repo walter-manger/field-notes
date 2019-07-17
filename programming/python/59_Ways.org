@@ -2489,8 +2489,212 @@
 
 ** Metaclasses and Attributes
 
-*** TODO 29. Use Plain Attributes Instead of Get and Set Methods
+   /Metaclasses/ let you intercept Python's =class= statement and provide special behavior each time a class is defined.
+
+*** DONE 29. Use Plain Attributes Instead of Get and Set Methods
+    CLOSED: [2019-07-17 Wed 16:01]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-17 Wed 16:01]
+    :LOGBOOK:
+    CLOCK: [2019-07-17 Wed 15:22]--[2019-07-17 Wed 16:01] =>  0:39
+    :END:
     
+    Bad Java type porting:
+
+    #+begin_src python :session :results output :exports both
+      class OldResistor(object):
+          def __init__(self, ohms):
+              self._ohms = ohms
+
+          def get_ohms(self):
+              return self._ohms
+
+          def set_ohms(self, ohms):
+              self._ohms = ohms
+
+
+      r0 = OldResistor(50e3)
+      print('Before: %5r' % r0.get_ohms())
+      r0.set_ohms(10e3)
+      print('After: %5r' % r0.get_ohms())
+
+      # Not Pythonic
+      r0.set_ohms(r0.get_ohms() + 5e3)
+    #+end_src
+
+    #+RESULTS:
+    : Before: 50000.0
+    : After: 10000.0
+
+
+    You don't need to implement setters/getters
+
+    #+begin_src python :session :results output :exports both
+       class Resistor(object):
+           def __init__(self, ohms):
+               self.ohms = ohms
+               self.voltage = 0
+               self.current = 0
+
+       r1 = Resistor(50e3)
+       print('Before: %5r' % r1.ohms)
+       r1.ohms += 10e3 # Way better
+       print('After: %5r' % r1.ohms)
+    #+end_src
+
+    #+RESULTS:
+    : Before: 50000.0
+    : After: 60000.0
+
+    Support special behavior with =@property= and =setter= when needed.
+    
+    #+begin_src python :session :results output :exports both
+       class Resistor(object):
+           def __init__(self, ohms):
+               self.ohms = ohms
+               self.voltage = 0
+               self.current = 0
+
+       class VoltageResistance(Resistor):
+           def __init__(self, ohms):
+               super().__init__(ohms)
+               self._voltage = 0
+
+           @property
+           def voltage(self):
+               return self._voltage
+
+           @voltage.setter
+           def voltage(self, voltage):
+               self._voltage = voltage
+               self.current = self._voltage / self.ohms
+
+       r2 = VoltageResistance(1e3)
+       print('Before: %5r amps' % r2.current)
+       r2.voltage = 10  # voltage setter invoked
+       print('After: %5r amps' % r2.current)
+    #+end_src
+
+    #+RESULTS:
+    : Before:     0 amps
+    : After:  0.01 amps
+    : 10
+
+    A =setter= also allows for type checking and validation on values.
+    
+    #+begin_src python :session :results output :exports both
+       class Resistor(object):
+           def __init__(self, ohms):
+               self.ohms = ohms
+               self.voltage = 0
+               self.current = 0
+
+       class BoundedResistor(Resistor):
+           def __init__(self, ohms):
+               super().__init__(ohms)
+
+           @property
+           def ohms(self):
+               return self._ohms
+
+           @ohms.setter
+           def ohms(self, ohms):
+               if ohms <= 0:
+                   raise ValueError('%f ohms must be > 0' % ohms)
+               self._ohms = ohms
+
+
+       r3 = BoundedResistor(1e3)
+       r3.ohms = 0 # Raises exception
+
+       BoundedResistor(-5) # Raises exception
+    #+end_src
+
+    #+RESULTS:
+    : Traceback (most recent call last):
+    :   File "<stdin>", line 1, in <module>
+    :   File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-owNSMT/python-vZyXeQ", line 23, in <module>
+    :     r3.ohms = 0
+    :   File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-owNSMT/python-vZyXeQ", line 18, in ohms
+    :     raise ValueError('%f ohms must be > 0' % ohms)
+    : ValueError: 0.000000 ohms must be > 0
+
+    =BoundedResistor().__init__= assigns =self.ohms = -5=, which invokes =@ohms.setter=. 
+
+    You could use =@property= for making attributes from parent classes immutable.
+    
+    #+begin_src python :session :results output :exports both
+       class Resistor(object):
+           def __init__(self, ohms):
+               self.ohms = ohms
+               self.voltage = 0
+               self.current = 0
+
+       class FixedResistance(Resistor):
+           def __init__(self, ohms):
+               super().__init__(ohms)
+
+           @property
+           def ohms(self):
+               return self._ohms
+
+           @ohms.setter
+           def ohms(self, ohms):
+               if hasattr(self, '_ohms'):
+                   raise AttributeError("Can't set attribute")
+               self._ohms = ohms
+
+
+       r4 = FixedResistance(1e3)
+       r4.ohms = 2e3 # Raises exception
+    #+end_src
+
+    #+RESULTS:
+    : Traceback (most recent call last):
+    :   File "<stdin>", line 1, in <module>
+    :   File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-owNSMT/python-q6u0NV", line 23, in <module>
+    :     r4.ohms = 2e3 # Raises exception
+    :   File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-owNSMT/python-q6u0NV", line 18, in ohms
+    :     raise AttributeError("Can't set attribute")
+    : AttributeError: Can't set attribute
+
+    Don't implement /suprising/ behavior in =@property=.
+
+    #+begin_src python :session :results output :exports both
+      class Resistor(object):
+          def __init__(self, ohms):
+              self.ohms = ohms
+              self.voltage = 0
+              self.current = 0
+
+      class MysteriousResistor(Resistor):
+          def __init__(self, ohms):
+              super().__init__(ohms)
+
+          @property
+          def ohms(self):
+              self.voltage = self._ohms * self.current
+              return self._ohms
+
+    
+      r5 = MysteriousResistor(10)
+      r5.current = 0.01
+      print('Before: %5r' % r5.voltage)
+      r5.ohms  # Getting ohms updates another property in the class BAD
+      print('After: %5r' % r5.voltage)
+    #+end_src
+
+    #+RESULTS:
+    : Before:     0
+    : After:   0.1
+
+    *Takeaways*
+
+    - Avoid set and get methods, use simple public attributes.
+    - Use =@property= to define special behavior when attributes are accessed on your objects, if necessary.
+    - Follow the rule of least surprise and avoid weird side effects in your =@property= methods.
+    - =@property= methods should be fast. Slow or complex work should be done in normal methods.
+   
+
 *** TODO 30. Consider =@property= Instead of Refactoring Attributes
 
 *** TODO 31. Use Descriptors for Reusable =@property= Methods
@@ -2514,34 +2718,36 @@
 ** Time
 
  #+BEGIN: clocktable :scope file :maxlevel 3
- #+CAPTION: Clock summary at [2019-07-15 Mon 14:26]
- | Headline                                       | Time   |      |      |
- |------------------------------------------------+--------+------+------|
- | *Total time*                                   | *9:30* |      |      |
- |------------------------------------------------+--------+------+------|
- | \_  Pythonic Thinking                          |        | 1:27 |      |
- | \_    8. Avoid More Than Two Expressions in... |        |      | 0:07 |
- | \_    9. Consider Generator Expressions for... |        |      | 0:22 |
- | \_    10. Prefer =enumerate= over =range=      |        |      | 0:14 |
- | \_    11. Use =zip= to Process Iterators in... |        |      | 0:14 |
- | \_    12. Avoid =else= Blocks After =for=...   |        |      | 0:10 |
- | \_    13. Take Advantage of Each Block in...   |        |      | 0:20 |
- | \_  Functions                                  |        | 4:01 |      |
- | \_    14. Prefer Exceptions to Returning...    |        |      | 0:18 |
- | \_    15. Know How Closures Interact with...   |        |      | 0:24 |
- | \_    16. Consider Generators Instead of...    |        |      | 0:26 |
- | \_    17. Be Defensive When Iterating Over...  |        |      | 1:05 |
- | \_    18. Reduce Visual Noise with Variable... |        |      | 0:28 |
- | \_    19. Provide Optional Behavior with...    |        |      | 0:19 |
- | \_    20. Use None and Docstrings to...        |        |      | 0:37 |
- | \_    21. Enforce Clarity with Keyword-Only... |        |      | 0:24 |
- | \_  Classes and Inheritance                    |        | 4:02 |      |
- | \_    22. Prefer Helper Classes Over...        |        |      | 0:35 |
- | \_    23. Accept Functions for Simple...       |        |      | 0:27 |
- | \_    24. Use =@classmethod= Polymorphism...   |        |      | 0:31 |
- | \_    25. Initialize Parent Classes with...    |        |      | 0:38 |
- | \_    26. Use Multiple Inheritance Only for... |        |      | 0:35 |
- | \_    27. Prefer Public Attributes Over...     |        |      | 0:42 |
- | \_    28. Inherit from =collections.abc=...    |        |      | 0:34 |
+ #+CAPTION: Clock summary at [2019-07-17 Wed 16:01]
+ | Headline                                       | Time    |      |      |
+ |------------------------------------------------+---------+------+------|
+ | *Total time*                                   | *10:09* |      |      |
+ |------------------------------------------------+---------+------+------|
+ | \_  Pythonic Thinking                          |         | 1:27 |      |
+ | \_    8. Avoid More Than Two Expressions in... |         |      | 0:07 |
+ | \_    9. Consider Generator Expressions for... |         |      | 0:22 |
+ | \_    10. Prefer =enumerate= over =range=      |         |      | 0:14 |
+ | \_    11. Use =zip= to Process Iterators in... |         |      | 0:14 |
+ | \_    12. Avoid =else= Blocks After =for=...   |         |      | 0:10 |
+ | \_    13. Take Advantage of Each Block in...   |         |      | 0:20 |
+ | \_  Functions                                  |         | 4:01 |      |
+ | \_    14. Prefer Exceptions to Returning...    |         |      | 0:18 |
+ | \_    15. Know How Closures Interact with...   |         |      | 0:24 |
+ | \_    16. Consider Generators Instead of...    |         |      | 0:26 |
+ | \_    17. Be Defensive When Iterating Over...  |         |      | 1:05 |
+ | \_    18. Reduce Visual Noise with Variable... |         |      | 0:28 |
+ | \_    19. Provide Optional Behavior with...    |         |      | 0:19 |
+ | \_    20. Use None and Docstrings to...        |         |      | 0:37 |
+ | \_    21. Enforce Clarity with Keyword-Only... |         |      | 0:24 |
+ | \_  Classes and Inheritance                    |         | 4:02 |      |
+ | \_    22. Prefer Helper Classes Over...        |         |      | 0:35 |
+ | \_    23. Accept Functions for Simple...       |         |      | 0:27 |
+ | \_    24. Use =@classmethod= Polymorphism...   |         |      | 0:31 |
+ | \_    25. Initialize Parent Classes with...    |         |      | 0:38 |
+ | \_    26. Use Multiple Inheritance Only for... |         |      | 0:35 |
+ | \_    27. Prefer Public Attributes Over...     |         |      | 0:42 |
+ | \_    28. Inherit from =collections.abc=...    |         |      | 0:34 |
+ | \_  Metaclasses and Attributes                 |         | 0:39 |      |
+ | \_    29. Use Plain Attributes Instead of...   |         |      | 0:39 |
  #+END:
  
