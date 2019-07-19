@@ -2836,7 +2836,7 @@
     : Not enough for 3 quota
     : Still Bucket(max_quota=100, quota_consumed=99)
 
-    That's a better, an non-destructive way to incremently improve a container class.
+    That's a better, and non-destructive way to incremently improve a container class.
     
     *Takeaways*
 
