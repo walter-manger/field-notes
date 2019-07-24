@@ -3026,7 +3026,259 @@
     - Don't get bogged down trying to understand exactly how =__getattribute__= uses the descriptor protocol for getting and setting attributes.
 
 
-*** TODO 32. Use =__getattr__=, =__getattribute__=, and =__setattr__= for Lazy Attributes
+*** DONE 32. Use =__getattr__=, =__getattribute__=, and =__setattr__= for Lazy Attributes
+    CLOSED: [2019-07-24 Wed 17:05]
+    - State "DONE"       from "IN-PROGRESS" [2019-07-24 Wed 17:05]
+    :LOGBOOK:
+    CLOCK: [2019-07-24 Wed 16:28]--[2019-07-24 Wed 17:05] =>  0:37
+    :END:
+    
+    Make a =LazyDB= class that mutates itself on =__getattr__=.
+
+    #+begin_src python :session :results output :exports both
+      class LazyDB(object):
+          def __init__(self):
+              self.exists = 5
+
+          def __getattr__(self, name):
+              value = 'value for %s' % name
+              setattr(self, name, value)
+              return value
+
+      data = LazyDB()
+      print('Before:', data.__dict__)
+      print('foo:   ', data.foo)
+      print('After: ', data.__dict__)
+    #+end_src
+
+    #+RESULTS:
+    : Before: {'exists': 5}
+    : foo:    value for foo
+    : After:  {'exists': 5, 'foo': 'value for foo'}
+
+    Add some logging to =LazyDB=.
+    
+    #+begin_src python :session :results output :exports both
+      class LazyDB(object):
+          def __init__(self):
+              self.exists = 5
+
+          def __getattr__(self, name):
+              value = 'value for %s' % name
+              setattr(self, name, value)
+              return value
+
+
+      class LoggingLazyDB(LazyDB):
+          def __getattr__(self, name):
+              print('Called __getattr__(%s)' % name)
+              return super().__getattr__(name)
+
+      data = LoggingLazyDB()
+      print('exists:', data.exists)
+      print('foo:   ', data.foo)
+      print('foo:   ', data.foo)
+    #+end_src
+
+    #+RESULTS:
+    : exists: 5
+    : Called __getattr__(foo)
+    : foo:    value for foo
+    : foo:    value for foo
+
+    Here, the =exists= attribute is present in the instance dictionary, so =__getattr__= is never called. The =foo= attribute is not, so =__getattr__= is invoked the first time, but not the second.
+   
+    But what if you did want to have something called each time the attribute is accessed?
+
+    #+begin_src python :session :results output :exports both
+      class ValidatingDB(object):
+          def __init__(self):
+              self.exists = 5
+
+          def __getattribute__(self, name):
+              print('Called __getattribute__(%s)' % name)
+              try:
+                  return super().__getattribute__(name)
+              except AttributeError:
+                  value = 'value for %s' % name
+                  setattr(self, name, value)
+                  return value
+
+
+      data = ValidatingDB()
+      print('exists:', data.exists)
+      print('foo:   ', data.foo)
+      print('foo:   ', data.foo)
+    #+end_src
+
+    #+RESULTS:
+    : Called __getattribute__(exists)
+    : exists: 5
+    : Called __getattribute__(foo)
+    : foo:    value for foo
+    : Called __getattribute__(foo)
+    : foo:    value for foo
+
+    What if you want to block for attributes you know are bad?
+    
+    #+begin_src python :session :results output :exports both
+      class MissingPropertyDB(object):
+          def __init__(self):
+              self.exists = 5
+
+
+          def __getattr__(self, name):
+              if name == 'bad_name':
+                  raise AttributeError('%s is missing' % name)
+              value = 'value for %s' % name
+              setattr(self, name, value)
+              return value
+
+
+      data = MissingPropertyDB()
+      print('exists:   ', data.exists)
+      print('foo:      ', data.foo)
+      print('foo:      ', data.foo)
+      print('bad_name: ', data.bad_name)
+    #+end_src
+
+    #+RESULTS:
+    #+begin_example
+    exists:    5
+    foo:       value for foo
+    foo:       value for foo
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-uQyA0l/python-QLh71y", line 18, in <module>
+        print('bad_name: ', data.bad_name)
+      File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-uQyA0l/python-QLh71y", line 8, in __getattr__
+        raise AttributeError('%s is missing' % name)
+    AttributeError: bad_name is missing
+    #+end_example
+
+    How can we check for attributes before we use them?
+
+    #+begin_src python :session :results output :exports both
+      class LazyDB(object):
+          def __init__(self):
+              self.exists = 5
+
+          def __getattr__(self, name):
+              value = 'value for %s' % name
+              setattr(self, name, value)
+              return value
+
+
+      class LoggingLazyDB(LazyDB):
+          def __getattr__(self, name):
+              print('Called __getattr__(%s)' % name)
+              return super().__getattr__(name)
+
+      data = LoggingLazyDB()
+      print('Before:     ', data.__dict__)
+      print('foo exists: ', hasattr(data, 'foo'))
+      print('After:      ', data.__dict__)
+    #+end_src
+
+    #+RESULTS:
+    : Before:      {'exists': 5}
+    : Called __getattr__(foo)
+    : foo exists:  True
+    : After:       {'exists': 5, 'foo': 'value for foo'}
+
+    Notice again that =__getattr__= is called once. If we were to implement =__getattribute__=, it would be called each time =hasattr= is called.
+
+    How does =__setattr__= work in constrast?
+    
+    #+begin_src python :session :results output :exports both
+      class SavingDB(object):
+          def __setattr__(self, name, value):
+              super().__setattr__(name, value)
+
+
+      class LoggingSavingDB(SavingDB):
+          def __setattr__(self, name, value):
+              print('Called __setattr__(%s, %r)' % (name, value))
+              return super().__setattr__(name, value)
+
+      data = LoggingSavingDB()
+      print('Before:     ', data.__dict__)
+      data.foo = 5
+      print('After:      ', data.__dict__)
+      data.foo = 7
+      print('Finally:    ', data.__dict__)
+    #+end_src
+
+    #+RESULTS:
+    : Before:      {}
+    : Called __setattr__(foo, 5)
+    : After:       {'foo': 5}
+    : Called __setattr__(foo, 7)
+    : Finally:     {'foo': 7}
+
+    =__setattr__= is called every time an attribute is set, unlike =__getattr__=. 
+
+    The problem with =__setattr__= and =__getattribute__= is that they are called on every attribute access. You may not want that to happen.
+
+    #+begin_src python :session :results output :exports both
+      class BrokenDictionaryDB(object):
+          def __init__(self, data):
+              self._data = {}
+
+          def __getattribute__(self, name):
+              print('Called __getattribute__(%s)' % name)
+              return self._data[name]
+
+
+      data = BrokenDictionaryDB({'foo': 3})
+      # data.foo
+    #+end_src
+
+    #+RESULTS:
+    #+begin_example
+   Called __getattribute__(_data)
+    Called __getattribute__(_data)
+    Called __getattribute__(_data)
+    Called __getattribute__(_data
+    Traceback (most recent call last):
+      File "<stdin>", line 1, in <module>
+      File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-uQyA0l/python-p9lrM9", line 11, in <module>
+        data.foo
+      File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-uQyA0l/python-p9lrM9", line 7, in __getattribute__
+        return self._data[name]
+      File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-uQyA0l/python-p9lrM9", line 7, in __getattribute__
+        return self._data[name]
+      File "/var/folders/bz/tc86r39x3yb0dm00h93xbbn40000gn/T/babel-uQyA0l/python-p9lrM9", line 7, in __getattribute__
+        return self._data[name]
+      [Previous line repeated 328 more times]
+    RecursionError: maximum recursion depth exceeded
+    #+end_example
+
+    We can fix this recursion issue like this.
+
+    #+begin_src python :session :results output :exports both
+      class DictionaryDB(object):
+          def __init__(self, data):
+              self._data = data
+
+          def __getattribute__(self, name):
+              data_dict = super().__getattribute__('_data')
+              return data_dict[name]
+
+
+      data = DictionaryDB({'foo': 3})
+      print(data.foo)
+    #+end_src
+
+    #+RESULTS:
+    : 3
+    
+    *Takeaways*
+
+    - Use =__getattr__=  and =__setattr__= to lazily load and save attributes for an object.
+    - Understand that =__getattr__= only gets called once when accessing a missing attribute, whereas =__getattribute__= gets called everytime an attribute is accessed.
+    - Avoid infinite recursion in =__getattribute__= and =__setattr__= by using methods from =super()= to access instance attributes directly.
+
 
 *** TODO 33. Validate Subclasses with Metaclasses
 
@@ -3045,10 +3297,10 @@
 ** Time
 
  #+BEGIN: clocktable :scope file :maxlevel 3
- #+CAPTION: Clock summary at [2019-07-22 Mon 17:14]
+ #+CAPTION: Clock summary at [2019-07-24 Wed 17:05]
  | Headline                                       | Time    |      |      |
  |------------------------------------------------+---------+------+------|
- | *Total time*                                   | *11:06* |      |      |
+ | *Total time*                                   | *11:43* |      |      |
  |------------------------------------------------+---------+------+------|
  | \_  Pythonic Thinking                          |         | 1:27 |      |
  | \_    8. Avoid More Than Two Expressions in... |         |      | 0:07 |
@@ -3074,9 +3326,10 @@
  | \_    26. Use Multiple Inheritance Only for... |         |      | 0:35 |
  | \_    27. Prefer Public Attributes Over...     |         |      | 0:42 |
  | \_    28. Inherit from =collections.abc=...    |         |      | 0:34 |
- | \_  Metaclasses and Attributes                 |         | 1:36 |      |
+ | \_  Metaclasses and Attributes                 |         | 2:13 |      |
  | \_    29. Use Plain Attributes Instead of...   |         |      | 0:39 |
  | \_    30. Consider =@property= Instead of...   |         |      | 0:21 |
  | \_    31. Use Descriptors for Reusable...      |         |      | 0:36 |
+ | \_    32. Use =__getattr__=,...                |         |      | 0:37 |
  #+END:
  
