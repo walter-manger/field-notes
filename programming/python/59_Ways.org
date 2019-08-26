@@ -3570,7 +3570,7 @@
 
     *Takeaways*
    
-    - Class registration is a helpful patter for building modular Python programs
+    - Class registration is a helpful pattern for building modular Python programs
     - Metaclasses let you run registration code automatically each time your base class is subclassed in a program
     - Using metaclasses for class registration avoids errors by ensuring that you never miss a registration call
 
