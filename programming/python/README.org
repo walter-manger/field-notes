@@ -3,7 +3,37 @@
 #+TODO: TODO IN-PROGRESS | DONE(!)
 
 ** TODO Environment Setup
+
+*** TODO Linux Setup
+
+**** TODO Install Zsh 
+     https://github.com/robbyrussell/oh-my-zsh/wiki/Installing-ZSH
+    
+**** TODO Install OhMyZsh
+    `sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"`
+
+**** TODO Install Pyenv
+     https://github.com/pyenv/pyenv
+     `git clone https://github.com/pyenv/pyenv.git ~/.pyenv`
+
+**** TODO Configure Pyenv
+     
+     - Get prerequisites: https://github.com/pyenv/pyenv/wiki/common-build-problems
+     - Install python 3.6.2 `pyenv install 3.2.6`
+
+**** TODO Configure Node and NVM
+     
+    `sudo apt install nodejs`
+    
+    https://github.com/nvm-sh/nvm
+    
+    `curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.34.0/install.sh | bash`
  
+ 
+     
+ 
+
+     
 ** TODO Reference Materials
   
    - [[file:59_Ways.org][Effective Python]] 
@@ -12,3 +42,4 @@
    - [[file:programming/python/SICP.org][Structure and Interpretation of Computer Programs]]
 
  
+   
